@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR코드 관리 - 제주중앙고</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #f1f5f9; }
+.header {
+  background: linear-gradient(135deg, #e91e8c, #ff6b9d);
+  color: white; padding: 20px 30px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 4px 16px rgba(233,30,140,0.25);
+}
+.header h1 { font-size: 20px; font-weight: 700; }
+.header p  { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+.back-btn {
+  margin-left: auto; padding: 9px 18px;
+  background: rgba(255,255,255,0.2); color: white;
+  border: 1.5px solid rgba(255,255,255,0.4); border-radius: 10px;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+}
+.back-btn:hover { background: rgba(255,255,255,0.3); }
+.controls {
+  padding: 20px 30px;
+  background: white; border-bottom: 1px solid #e2e8f0;
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.controls select, .controls input {
+  padding: 9px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px;
+  font-size: 13px; font-family: inherit; background: #f8faff;
+}
+.controls select:focus, .controls input:focus { outline: none; border-color: #e91e8c; }
+.btn {
+  padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  font-family: inherit; cursor: pointer; border: none;
+  display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
+}
+.btn-pink  { background: linear-gradient(135deg,#e91e8c,#ff6b9d); color: white; box-shadow: 0 3px 12px rgba(233,30,140,0.25); }
+.btn-print { background: linear-gradient(135deg,#059669,#34d399); color: white; box-shadow: 0 3px 12px rgba(5,150,105,0.25); }
+.btn-gray  { background: #e2e8f0; color: #475569; }
+.btn:hover { transform: translateY(-1px); }
+.count-badge {
+  background: #fce4ec; color: #e91e8c; font-size: 13px; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px;
+}
+.qr-grid {
+  padding: 24px 30px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.qr-card {
+  background: white; border-radius: 16px; padding: 18px 14px;
+  text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  transition: transform 0.2s;
+  border: 1.5px solid #f0e0ea;
+}
+.qr-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.qr-card canvas { border-radius: 10px; margin-bottom: 10px; }
+.qr-card .student-id { font-size: 11px; color: #e91e8c; font-weight: 700; margin-bottom: 3px; }
+.qr-card .student-name { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 2px; }
+.qr-card .student-dept { font-size: 10px; color: #94a3b8; }
+.empty { text-align: center; padding: 80px 20px; color: #94a3b8; }
+.empty i { font-size: 48px; color: #fce4ec; margin-bottom: 16px; display: block; }
+@media print {
+  .header, .controls { display: none; }
+  body { background: white; }
+  .qr-grid { padding: 10px; gap: 10px; grid-template-columns: repeat(5,1fr); }
+  .qr-card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+  .qr-card:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>🌸 QR코드 관리</h1>
+    <p>학생별 QR코드 생성 및 인쇄</p>
+  </div>
+  <a href="admin.html" class="back-btn"><i class="fas fa-arrow-left"></i> 관리자로</a>
+</div>
+
+<div class="controls">
+  <select id="fGrade" onchange="generate()"><option value="">전체 학년</option><option value="1">1학년</option><option value="2">2학년</option></select>
+  <select id="fClass" onchange="generate()"><option value="">전체 반</option><option value="7">7반</option><option value="8">8반</option><option value="9">9반</option><option value="10">10반</option></select>
+  <select id="fDept"  onchange="generate()"><option value="">전체 학과</option><option value="금융비즈니스과">금융비즈니스과</option><option value="문화콘텐츠과">문화콘텐츠과</option></select>
+  <button class="btn btn-pink" onclick="generate()"><i class="fas fa-qrcode"></i> 생성</button>
+  <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> 인쇄</button>
+  <button class="btn btn-gray"  onclick="resetFilter()"><i class="fas fa-undo"></i> 초기화</button>
+  <span class="count-badge" id="countBadge">0개</span>
+</div>
+
+<div class="qr-grid" id="qrGrid">
+  <div class="empty"><i class="fas fa-qrcode"></i><p>위에서 필터를 설정하고 생성 버튼을 클릭하세요.</p></div>
+</div>
+
+<script src="js/students-data.js"></script>
+<script>
+const BASE_URL = window.location.origin + window.location.pathname.replace('qr.html','index.html');
+
+function generate() {
+  const grade = document.getElementById('fGrade').value;
+  const cls   = document.getElementById('fClass').value;
+  const dept  = document.getElementById('fDept').value;
+
+  const filtered = Object.values(STUDENTS_DATA).filter(s => {
+    if (grade && String(s.grade)     !== grade) return false;
+    if (cls   && String(s.class_num) !== cls)   return false;
+    if (dept  && s.department        !== dept)  return false;
+    return true;
+  }).sort((a,b) => a.grade-b.grade || a.class_num-b.class_num || a.student_num-b.student_num);
+
+  document.getElementById('countBadge').textContent = filtered.length + '개';
+  const grid = document.getElementById('qrGrid');
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty"><i class="fas fa-search"></i><p>해당 조건의 학생이 없습니다.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(s =>
+    `<div class="qr-card" id="card-${s.id}">
+      <canvas id="qr-${s.id}"></canvas>
+      <div class="student-id">${s.grade}학년 ${s.class_num}반 ${s.student_num}번</div>
+      <div class="student-name">${s.name}</div>
+      <div class="student-dept">${s.department}</div>
+    </div>`
+  ).join('');
+
+  // QR 생성 (비동기, 배치)
+  filtered.forEach((s, i) => {
+    setTimeout(() => {
+      const url = `${BASE_URL}?sid=${s.id}`;
+      QRCode.toCanvas(document.getElementById(`qr-${s.id}`), url, {
+        width: 130, margin: 1,
+        color: { dark: '#1a1a2e', light: '#ffffff' },
+        errorCorrectionLevel: 'M'
+      });
+    }, i * 5);
+  });
+}
+
+function resetFilter() {
+  ['fGrade','fClass','fDept'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('qrGrid').innerHTML = '<div class="empty"><i class="fas fa-qrcode"></i><p>위에서 필터를 설정하고 생성 버튼을 클릭하세요.</p></div>';
+  document.getElementById('countBadge').textContent = '0개';
+}
+</script>
+</body>
+</html>

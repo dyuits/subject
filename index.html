@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>제주중앙고 선택과목 신청</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink-deep: #d63384;
+  --pink-main: #e91e8c;
+  --pink-light: #ffb7c5;
+  --pink-pale: #fff0f5;
+  --green-main: #2d8653;
+  --green-light: #81c784;
+  --green-pale: #f0fff4;
+  --blue-sky: #74b9ff;
+  --cream: #fffbf0;
+  --text-dark: #2d2d2d;
+  --text-mid: #555;
+  --text-light: #888;
+  --shadow: 0 8px 32px rgba(214,51,132,0.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: linear-gradient(160deg, #ffe4ee 0%, #ffd6e7 30%, #e8f5e9 70%, #c8e6c9 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 0 0 60px;
+}
+
+/* 벚꽃 애니메이션 */
+.petals-container {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0; overflow: hidden;
+}
+.petal {
+  position: absolute; top: -20px;
+  width: 12px; height: 12px;
+  background: radial-gradient(circle at 30% 30%, #ffb7c5, #ff8fab);
+  border-radius: 50% 0 50% 0;
+  opacity: 0.7;
+  animation: fall linear infinite;
+}
+.petal:nth-child(2n) { background: radial-gradient(circle at 30% 30%, #ffc8d4, #ffaec4); border-radius: 0 50% 0 50%; }
+.petal:nth-child(3n) { background: radial-gradient(circle at 30% 30%, #a8e6cf, #56c596); border-radius: 50%; width: 8px; height: 8px; }
+.petal:nth-child(1) { left: 5%; animation-duration: 8s; animation-delay: 0s; width: 10px; height: 10px; }
+.petal:nth-child(2) { left: 15%; animation-duration: 11s; animation-delay: 2s; }
+.petal:nth-child(3) { left: 25%; animation-duration: 9s; animation-delay: 1s; width: 8px; height: 8px; }
+.petal:nth-child(4) { left: 35%; animation-duration: 12s; animation-delay: 3s; }
+.petal:nth-child(5) { left: 45%; animation-duration: 10s; animation-delay: 0.5s; }
+.petal:nth-child(6) { left: 55%; animation-duration: 8.5s; animation-delay: 4s; }
+.petal:nth-child(7) { left: 65%; animation-duration: 11.5s; animation-delay: 1.5s; }
+.petal:nth-child(8) { left: 75%; animation-duration: 9.5s; animation-delay: 2.5s; }
+.petal:nth-child(9) { left: 85%; animation-duration: 10.5s; animation-delay: 3.5s; }
+.petal:nth-child(10) { left: 92%; animation-duration: 7.5s; animation-delay: 0.8s; }
+@keyframes fall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(50vh) translateX(30px) rotate(180deg); opacity: 0.6; }
+  100% { transform: translateY(110vh) translateX(-20px) rotate(360deg); opacity: 0; }
+}
+
+.container {
+  width: 100%; max-width: 500px;
+  padding: 0 16px;
+  position: relative; z-index: 1;
+}
+
+/* 헤더 */
+.header {
+  text-align: center;
+  padding: 36px 0 24px;
+  color: #2d2d2d;
+}
+.header .school-logo {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, #e91e8c, #ff6b9d);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  font-size: 30px; color: white;
+  box-shadow: 0 8px 24px rgba(233,30,140,0.3);
+}
+.header h1 {
+  font-size: 21px; font-weight: 700;
+  color: #2d2d2d; margin-bottom: 5px;
+}
+.header .subtitle { font-size: 13px; color: #666; }
+.header .may-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #ff8fab, #e91e8c);
+  color: white; font-size: 12px; font-weight: 600;
+  padding: 5px 14px; border-radius: 20px;
+  margin-top: 10px;
+  box-shadow: 0 3px 12px rgba(233,30,140,0.25);
+}
+
+/* 카드 */
+.card {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 26px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+.card-title {
+  font-size: 16px; font-weight: 700;
+  color: var(--pink-deep);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #ffe0eb;
+}
+.card-title i { color: var(--pink-main); }
+
+/* 단계 표시 */
+.steps {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 26px;
+}
+.step { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.step-circle {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #aaa;
+  background: white; transition: all 0.3s;
+}
+.step.active .step-circle {
+  background: linear-gradient(135deg, #e91e8c, #ff6b9d);
+  border-color: #e91e8c; color: white;
+  box-shadow: 0 4px 12px rgba(233,30,140,0.3);
+}
+.step.done .step-circle {
+  background: linear-gradient(135deg, #2d8653, #4caf50);
+  border-color: #2d8653; color: white;
+}
+.step-label { font-size: 10px; color: #bbb; white-space: nowrap; font-weight: 600; }
+.step.active .step-label { color: var(--pink-deep); }
+.step.done .step-label { color: var(--green-main); }
+.step-line { width: 50px; height: 2px; background: #e0e0e0; margin-bottom: 22px; transition: background 0.3s; }
+.step-line.done { background: linear-gradient(90deg, #2d8653, #4caf50); }
+
+/* 폼 */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 7px; }
+.form-select, .form-input {
+  width: 100%; padding: 13px 16px;
+  border: 1.5px solid #f0d0e0; border-radius: 12px;
+  font-size: 15px; font-family: inherit; color: #222;
+  background: #fff8fb; transition: all 0.2s;
+  -webkit-appearance: none;
+}
+.form-select:focus, .form-input:focus {
+  outline: none; border-color: var(--pink-main); background: white;
+  box-shadow: 0 0 0 3px rgba(233,30,140,0.1);
+}
+
+/* 알림 */
+.notice {
+  background: linear-gradient(135deg, #fff0f5, #fff8e1);
+  border-left: 4px solid var(--pink-main);
+  border-radius: 0 12px 12px 0;
+  padding: 13px 15px; margin-bottom: 18px;
+  font-size: 12.5px; color: #8B4566; line-height: 1.7;
+}
+.notice strong { color: var(--pink-deep); }
+
+/* 과목 선택 */
+.subject-group { margin-bottom: 22px; }
+.subject-group-title {
+  font-size: 13px; font-weight: 700; color: #333;
+  margin-bottom: 10px; padding: 9px 13px;
+  background: linear-gradient(135deg, #fff0f5, #fce4ec);
+  border-radius: 10px;
+  display: flex; align-items: center; gap: 7px;
+  border-left: 3px solid var(--pink-main);
+}
+.subject-group-title .badge {
+  font-size: 10px; padding: 3px 9px;
+  border-radius: 20px; margin-left: auto;
+  background: linear-gradient(135deg, #e91e8c, #ff6b9d); color: white;
+}
+.radio-option {
+  display: flex; align-items: center;
+  padding: 13px 15px; border: 1.5px solid #f5e0e8;
+  border-radius: 12px; margin-bottom: 8px;
+  cursor: pointer; transition: all 0.2s; background: white;
+}
+.radio-option:hover { border-color: var(--pink-light); background: var(--pink-pale); }
+.radio-option.selected {
+  border-color: var(--pink-main);
+  background: linear-gradient(135deg, #fff0f7, #ffe4ec);
+  box-shadow: 0 3px 12px rgba(233,30,140,0.15);
+}
+.radio-option input[type="radio"] { display: none; }
+.radio-custom {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid #e0c0cc; margin-right: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.radio-option.selected .radio-custom {
+  border-color: var(--pink-main);
+  background: linear-gradient(135deg, #e91e8c, #ff6b9d);
+  box-shadow: 0 2px 8px rgba(233,30,140,0.3);
+}
+.radio-option.selected .radio-custom::after {
+  content: ''; width: 8px; height: 8px; background: white; border-radius: 50%;
+}
+.radio-text { flex: 1; }
+.radio-text .subject-name { font-size: 14px; font-weight: 600; color: #222; }
+.radio-text .subject-sub { font-size: 11px; color: #999; margin-top: 3px; }
+
+/* 1학기 고정 */
+.fixed-subjects {
+  background: linear-gradient(135deg, #f0fff4, #e8f5e9);
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 20px;
+  border: 1px solid #c8e6c9;
+}
+.fixed-subjects-title {
+  font-size: 12px; font-weight: 700; color: #2d8653;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 7px;
+}
+.fixed-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 0; border-bottom: 1px solid #e8f5e9;
+}
+.fixed-item:last-child { border-bottom: none; }
+.fixed-item i { color: #2d8653; font-size: 13px; }
+.fixed-item span { font-size: 13px; color: #333; font-weight: 500; }
+.fixed-item .sem-badge {
+  margin-left: auto; font-size: 10px; padding: 2px 9px;
+  border-radius: 20px; background: #c8e6c9; color: #2d8653; font-weight: 600;
+}
+
+/* 학기 구분선 */
+.semester-divider {
+  display: flex; align-items: center; gap: 10px; margin: 18px 0 14px;
+}
+.semester-divider::before, .semester-divider::after {
+  content: ''; flex: 1; height: 1.5px;
+  background: linear-gradient(90deg, transparent, #e91e8c, transparent);
+}
+.semester-divider span { font-size: 12px; color: var(--pink-deep); font-weight: 700; white-space: nowrap; }
+
+/* 버튼 */
+.btn-primary {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #e91e8c, #ff6b9d);
+  color: white; border: none; border-radius: 14px;
+  font-size: 16px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: all 0.25s;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  box-shadow: 0 6px 20px rgba(233,30,140,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(233,30,140,0.35); }
+.btn-primary:disabled { background: #e0e0e0; transform: none; box-shadow: none; cursor: not-allowed; }
+.btn-secondary {
+  width: 100%; padding: 14px;
+  background: white; color: var(--pink-deep);
+  border: 2px solid var(--pink-light); border-radius: 14px;
+  font-size: 15px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: all 0.2s; margin-top: 10px;
+}
+.btn-secondary:hover { background: var(--pink-pale); border-color: var(--pink-main); }
+
+/* 오류 */
+.error-msg { color: #e53935; font-size: 13px; margin-bottom: 12px; display: none; padding: 10px 14px; background: #fff5f5; border-radius: 10px; border-left: 3px solid #e53935; }
+
+/* 완료 화면 */
+.complete-icon {
+  width: 88px; height: 88px;
+  background: linear-gradient(135deg, #2d8653, #4caf50);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; font-size: 38px; color: white;
+  box-shadow: 0 12px 32px rgba(45,134,83,0.3);
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.complete-title { text-align: center; font-size: 22px; font-weight: 700; color: #2d8653; margin-bottom: 8px; }
+.complete-sub { text-align: center; font-size: 13px; color: #666; margin-bottom: 22px; line-height: 1.7; }
+
+/* 결과 카드 */
+.info-row {
+  display: flex; align-items: flex-start;
+  padding: 11px 0; border-bottom: 1px solid #f5e8f0;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label { font-size: 12px; color: #999; width: 95px; flex-shrink: 0; font-weight: 600; padding-top: 2px; }
+.info-value { font-size: 14px; color: #222; font-weight: 600; flex: 1; }
+.info-badge {
+  display: inline-block; font-size: 11px; padding: 4px 11px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #ffe0f0, #ffc8dc);
+  color: var(--pink-deep); font-weight: 700;
+  margin-right: 5px; margin-bottom: 3px;
+}
+
+/* PIN 모달 */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px;
+}
+.modal {
+  background: white; border-radius: 24px;
+  padding: 32px 26px; width: 100%; max-width: 340px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.modal h3 { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; color: #2d2d2d; }
+.modal p { font-size: 13px; color: #888; text-align: center; margin-bottom: 22px; line-height: 1.6; }
+.pin-input { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+.pin-digit {
+  width: 54px; height: 60px; border: 2px solid #f0d0e0; border-radius: 14px;
+  font-size: 24px; font-weight: 700; text-align: center;
+  font-family: inherit; color: var(--pink-deep); background: #fff8fb;
+  transition: all 0.2s;
+}
+.pin-digit:focus { outline: none; border-color: var(--pink-main); background: white; box-shadow: 0 0 0 3px rgba(233,30,140,0.12); }
+.modal-error { color: #e53935; font-size: 13px; text-align: center; margin-bottom: 12px; display: none; }
+.hidden { display: none !important; }
+.loading-spinner {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 신청 마감 배너 */
+.closed-banner {
+  background: linear-gradient(135deg, #fff3cd, #ffe082);
+  border: 1.5px solid #ffca28; border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 16px; text-align: center;
+}
+.closed-banner i { color: #f57f17; font-size: 22px; display: block; margin-bottom: 8px; }
+.closed-banner p { color: #7b5400; font-size: 14px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="petals-container">
+  <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  <div class="petal"></div>
+</div>
+
+<div class="container">
+  <header class="header">
+    <div class="school-logo"><i class="fas fa-graduation-cap"></i></div>
+    <h1>제주중앙고등학교</h1>
+    <p class="subtitle">2027학년도 고교학점제 선택과목 신청</p>
+    <div class="may-badge">🌸 2026년 5월 · 1차 수강신청</div>
+  </header>
+
+  <!-- STEP 1: 학생 확인 -->
+  <section id="step1" class="card">
+    <div class="steps" id="stepIndicator">
+      <div class="step active" id="si1"><div class="step-circle">1</div><div class="step-label">본인확인</div></div>
+      <div class="step-line" id="sl1"></div>
+      <div class="step" id="si2" style="opacity:0.4"><div class="step-circle">2</div><div class="step-label">과목선택</div></div>
+      <div class="step-line" id="sl2"></div>
+      <div class="step" id="si3" style="opacity:0.4"><div class="step-circle">3</div><div class="step-label">제출완료</div></div>
+    </div>
+    <div class="card-title"><i class="fas fa-user-check"></i> 학생 본인 확인</div>
+    <div class="notice">
+      <strong>🌸 1차 수강신청 안내</strong><br>
+      신청 기간: <strong>2026년 5월 18일(월) ~ 5월 20일(수) 23:55</strong><br>
+      학번(학년·반·번호)과 생년월일을 입력하여 본인을 확인해 주세요.
+    </div>
+    <div class="form-group">
+      <label class="form-label">학년</label>
+      <select class="form-select" id="selGrade">
+        <option value="">학년 선택</option>
+        <option value="1">1학년</option>
+        <option value="2">2학년</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">반</label>
+      <select class="form-select" id="selClass">
+        <option value="">반 선택</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">번호</label>
+      <select class="form-select" id="selNum">
+        <option value="">번호 선택</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">생년월일 (예: 20100213)</label>
+      <input type="tel" class="form-input" id="inputBirth" placeholder="생년월일 8자리 입력" maxlength="8" autocomplete="off">
+    </div>
+    <div id="step1Error" class="error-msg"></div>
+    <button class="btn-primary" id="btnVerify" onclick="verifyStudent()">
+      <i class="fas fa-arrow-right"></i> 본인 확인 후 과목 선택
+    </button>
+  </section>
+
+  <!-- STEP 2: 1학년 과목 선택 -->
+  <section id="step2_grade1" class="card hidden">
+    <div class="card-title"><i class="fas fa-book-open"></i> 선택과목 신청 (1학년)</div>
+    <div id="studentInfo1" class="notice" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#4caf50;color:#1b5e20;"></div>
+    <div class="fixed-subjects">
+      <div class="fixed-subjects-title"><i class="fas fa-lock"></i> 1학기 공통 필수 (고정)</div>
+      <div class="fixed-item"><i class="fas fa-check-circle"></i><span>문학</span><span class="sem-badge">1학기</span></div>
+      <div class="fixed-item"><i class="fas fa-check-circle"></i><span>대수</span><span class="sem-badge">1학기</span></div>
+      <div class="fixed-item"><i class="fas fa-check-circle"></i><span>영어 I</span><span class="sem-badge">1학기</span></div>
+    </div>
+    <div class="semester-divider"><span>✏️ 2학기 선택과목 (1개씩 선택)</span></div>
+    <div class="subject-group">
+      <div class="subject-group-title"><i class="fas fa-pen-nib"></i> 국어 <span class="badge">1과목</span></div>
+      <label class="radio-option" onclick="selectSubject(this,'korean')">
+        <input type="radio" name="korean" value="화법과언어">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">화법과 언어</div><div class="subject-sub">국어 교과 / 2학기</div></div>
+      </label>
+      <label class="radio-option" onclick="selectSubject(this,'korean')">
+        <input type="radio" name="korean" value="직무의사소통">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">직무 의사소통</div><div class="subject-sub">국어 교과 / 2학기</div></div>
+      </label>
+    </div>
+    <div class="subject-group">
+      <div class="subject-group-title"><i class="fas fa-calculator"></i> 수학 <span class="badge">1과목</span></div>
+      <label class="radio-option" onclick="selectSubject(this,'math')">
+        <input type="radio" name="math" value="확률과통계">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">확률과 통계</div><div class="subject-sub">수학 교과 / 2학기</div></div>
+      </label>
+      <label class="radio-option" onclick="selectSubject(this,'math')">
+        <input type="radio" name="math" value="직무수학">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">직무 수학</div><div class="subject-sub">수학 교과 / 2학기</div></div>
+      </label>
+    </div>
+    <div class="subject-group">
+      <div class="subject-group-title"><i class="fas fa-language"></i> 영어 <span class="badge">1과목</span></div>
+      <label class="radio-option" onclick="selectSubject(this,'english')">
+        <input type="radio" name="english" value="영어II">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">영어 II</div><div class="subject-sub">영어 교과 / 2학기</div></div>
+      </label>
+      <label class="radio-option" onclick="selectSubject(this,'english')">
+        <input type="radio" name="english" value="직무영어">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">직무 영어</div><div class="subject-sub">영어 교과 / 2학기</div></div>
+      </label>
+    </div>
+    <div class="subject-group">
+      <div class="subject-group-title"><i class="fas fa-globe"></i> 제2외국어 <span class="badge">1과목</span></div>
+      <label class="radio-option" onclick="selectSubject(this,'lang2')">
+        <input type="radio" name="lang2" value="일본어(1학기)-일본어회화(2학기)">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">일본어</div><div class="subject-sub">1학기 일본어 → 2학기 일본어 회화</div></div>
+      </label>
+      <label class="radio-option" onclick="selectSubject(this,'lang2')">
+        <input type="radio" name="lang2" value="중국어(1학기)-중국어회화(2학기)">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">중국어</div><div class="subject-sub">1학기 중국어 → 2학기 중국어 회화</div></div>
+      </label>
+    </div>
+    <div id="step2Error1" class="error-msg"></div>
+    <button class="btn-primary" id="btnSubmit1" onclick="submitGrade1()"><i class="fas fa-paper-plane"></i> 선택과목 신청하기</button>
+    <button class="btn-secondary" onclick="goBack()">← 이전으로</button>
+  </section>
+
+  <!-- STEP 2: 2학년 과목 선택 -->
+  <section id="step2_grade2" class="card hidden">
+    <div class="card-title"><i class="fas fa-book-open"></i> 선택과목 신청 (2학년)</div>
+    <div id="studentInfo2" class="notice" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-color:#4caf50;color:#1b5e20;"></div>
+    <div class="subject-group">
+      <div class="subject-group-title"><i class="fas fa-globe-asia"></i> 사회 / 과학 <span class="badge">1과목</span></div>
+      <div style="font-size:11.5px;color:#888;margin-bottom:10px;padding:0 2px;">💡 1학기 과목은 2학기 연계 과목으로 자동 연결됩니다.</div>
+      <label class="radio-option" onclick="selectSubject(this,'social')">
+        <input type="radio" name="social" value="사회와문화-사회문제탐구">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">사회와 문화 → 사회문제 탐구</div><div class="subject-sub">사회 교과 / 일반선택 → 융합선택</div></div>
+      </label>
+      <label class="radio-option" onclick="selectSubject(this,'social')">
+        <input type="radio" name="social" value="생명과학-과학의역사와문화">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">생명과학 → 과학의 역사와 문화</div><div class="subject-sub">과학 교과 / 일반선택 → 융합선택</div></div>
+      </label>
+    </div>
+    <div class="subject-group" id="majorGroup_finance">
+      <div class="subject-group-title"><i class="fas fa-briefcase"></i> 전문교과 (금융비즈니스과) <span class="badge">1과목</span></div>
+      <div style="font-size:11.5px;color:#888;margin-bottom:10px;padding:0 2px;">💡 수강 인원이 많은 한 과목만 개설됩니다.</div>
+      <label class="radio-option" onclick="selectSubject(this,'major')">
+        <input type="radio" name="major" value="전자상거래실무">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">전자상거래 실무</div><div class="subject-sub">전문교과 / 기초</div></div>
+      </label>
+      <label class="radio-option" onclick="selectSubject(this,'major')">
+        <input type="radio" name="major" value="회계실무">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">회계 실무</div><div class="subject-sub">전문교과 / 기초</div></div>
+      </label>
+    </div>
+    <div class="subject-group hidden" id="majorGroup_culture">
+      <div class="subject-group-title"><i class="fas fa-palette"></i> 전문교과 (문화콘텐츠과) <span class="badge">1과목</span></div>
+      <div style="font-size:11.5px;color:#888;margin-bottom:10px;padding:0 2px;">💡 수강 인원이 많은 한 과목만 개설됩니다.</div>
+      <label class="radio-option" onclick="selectSubject(this,'major')">
+        <input type="radio" name="major" value="전자상거래실무">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">전자상거래 실무</div><div class="subject-sub">전문교과 / 기초</div></div>
+      </label>
+      <label class="radio-option" onclick="selectSubject(this,'major')">
+        <input type="radio" name="major" value="디지털디자인">
+        <div class="radio-custom"></div>
+        <div class="radio-text"><div class="subject-name">디지털 디자인</div><div class="subject-sub">전문교과 / 기초</div></div>
+      </label>
+    </div>
+    <div id="step2Error2" class="error-msg"></div>
+    <button class="btn-primary" id="btnSubmit2" onclick="submitGrade2()"><i class="fas fa-paper-plane"></i> 선택과목 신청하기</button>
+    <button class="btn-secondary" onclick="goBack()">← 이전으로</button>
+  </section>
+
+  <!-- STEP 3: 완료 -->
+  <section id="step3" class="card hidden">
+    <div class="complete-icon"><i class="fas fa-check"></i></div>
+    <div class="complete-title">신청 완료! 🌸</div>
+    <div class="complete-sub">선택과목 신청이 정상적으로 접수되었습니다.<br>신청 내역을 아래에서 확인하세요.</div>
+    <div id="resultSummary"></div>
+    <div class="notice">
+      <strong>📌 신청 후 안내</strong><br>
+      신청 내역 변경은 신청 기간 내에 담임 선생님께 문의하세요.<br>
+      수강신청 결과는 추후 공지됩니다.
+    </div>
+    <button class="btn-secondary" style="margin-top:0" onclick="window.location.reload()">
+      <i class="fas fa-home"></i> 처음으로
+    </button>
+  </section>
+</div>
+
+<!-- PIN 모달 -->
+<div class="modal-overlay hidden" id="pinModal">
+  <div class="modal">
+    <h3>🔒 수정 비밀번호</h3>
+    <p>이미 신청하셨습니다.<br>수정하려면 담당 선생님께 비밀번호를 받아 입력하세요.</p>
+    <div class="pin-input">
+      <input class="pin-digit" type="password" maxlength="1" id="pin1" inputmode="numeric" oninput="pinNext(this,'pin2')" onkeydown="pinKeyDown(event,null,'pin1')">
+      <input class="pin-digit" type="password" maxlength="1" id="pin2" inputmode="numeric" oninput="pinNext(this,'pin3')" onkeydown="pinKeyDown(event,'pin1','pin2')">
+      <input class="pin-digit" type="password" maxlength="1" id="pin3" inputmode="numeric" oninput="pinNext(this,'pin4')" onkeydown="pinKeyDown(event,'pin2','pin3')">
+      <input class="pin-digit" type="password" maxlength="1" id="pin4" inputmode="numeric" oninput="pinSubmit()" onkeydown="pinKeyDown(event,'pin3','pin4')">
+    </div>
+    <div class="modal-error" id="pinError">❌ 비밀번호가 올바르지 않습니다.</div>
+    <div id="pinLockMsg" style="color:#e53935;font-size:13px;text-align:center;margin-bottom:12px;display:none;"></div>
+    <button class="btn-secondary" style="margin-top:0" onclick="closePinModal()">취소</button>
+  </div>
+</div>
+
+<script src="js/firebase-config.js"></script>
+<script src="js/students-data.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const app = initializeApp(FIREBASE_CONFIG);
+const db = getDatabase(app);
+
+// ===== 신청 기간 체크 =====
+const OPEN_DATE  = new Date('2026-05-18T00:00:00+09:00');
+const CLOSE_DATE = new Date('2026-05-20T23:55:00+09:00');
+function isOpen() {
+  const now = new Date();
+  return now >= OPEN_DATE && now <= CLOSE_DATE;
+}
+
+// ===== 전역 상태 =====
+let currentStudent = null;
+let existingRecord = null;
+let pinAttempts = 0;
+const MAX_PIN_ATTEMPTS = 5;
+
+// ===== 학년 변경 =====
+document.getElementById('selGrade').addEventListener('change', function() {
+  const grade = this.value;
+  const selClass = document.getElementById('selClass');
+  const selNum   = document.getElementById('selNum');
+  selClass.innerHTML = '<option value="">반 선택</option>';
+  selNum.innerHTML   = '<option value="">번호 선택</option>';
+  if (!grade) return;
+  [7,8,9,10].forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c + '반';
+    selClass.appendChild(opt);
+  });
+});
+
+document.getElementById('selClass').addEventListener('change', function() {
+  const grade = document.getElementById('selGrade').value;
+  const cls   = this.value;
+  const selNum = document.getElementById('selNum');
+  selNum.innerHTML = '<option value="">번호 선택</option>';
+  if (!cls) return;
+  let maxNum = 25;
+  if (grade === '2' && ['8','9','10'].includes(cls)) maxNum = 24;
+  for (let i = 1; i <= maxNum; i++) {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = i + '번';
+    selNum.appendChild(opt);
+  }
+});
+
+// ===== 본인 확인 =====
+window.verifyStudent = async function() {
+  if (!isOpen()) {
+    showError('step1Error','신청 기간(5/18~5/20)이 아닙니다.');
+    return;
+  }
+  const grade = document.getElementById('selGrade').value;
+  const cls   = document.getElementById('selClass').value;
+  const num   = document.getElementById('selNum').value;
+  const birth = document.getElementById('inputBirth').value.trim();
+  const errEl = document.getElementById('step1Error');
+  errEl.style.display = 'none';
+
+  if (!grade || !cls || !num) { showError('step1Error','학년, 반, 번호를 모두 선택해 주세요.'); return; }
+  if (!birth || birth.length !== 8 || !/^\d{8}$/.test(birth)) {
+    showError('step1Error','생년월일을 8자리 숫자로 입력해 주세요. (예: 20100213)'); return;
+  }
+
+  const btn = document.getElementById('btnVerify');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loading-spinner"></div> 확인 중...';
+
+  const studentId = `${grade}-${cls}-${num}`;
+
+  // 로컬 데이터에서 먼저 확인 (API 호출 최소화)
+  const student = STUDENTS_DATA[studentId];
+  if (!student) {
+    showError('step1Error','학생 정보를 찾을 수 없습니다. 학번을 확인해 주세요.');
+    resetBtn(btn); return;
+  }
+
+  const dbBirth = student.birth.replace(/\./g,'').replace(/[^0-9]/g,'').substring(0,8);
+  if (dbBirth !== birth) {
+    showError('step1Error','생년월일이 일치하지 않습니다. 다시 확인해 주세요.');
+    resetBtn(btn); return;
+  }
+
+  currentStudent = student;
+
+  // Firebase에서 기존 신청 내역 확인
+  try {
+    const snap = await get(ref(db, `selections/${studentId}`));
+    existingRecord = snap.exists() ? snap.val() : null;
+  } catch(e) {
+    existingRecord = null;
+  }
+
+  if (existingRecord) {
+    resetBtn(btn);
+    openPinModal();
+  } else {
+    resetBtn(btn);
+    showStep2();
+  }
+};
+
+function resetBtn(btn) {
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-arrow-right"></i> 본인 확인 후 과목 선택';
+}
+
+function showStep2() {
+  document.getElementById('step1').classList.add('hidden');
+  updateStepUI(2);
+
+  if (currentStudent.grade === 1) {
+    document.getElementById('step2_grade1').classList.remove('hidden');
+    document.getElementById('studentInfo1').innerHTML =
+      `👤 <strong>${currentStudent.grade}학년 ${currentStudent.class_num}반 ${currentStudent.student_num}번 ${currentStudent.name}</strong> (${currentStudent.department})`;
+    if (existingRecord) restoreSelection1();
+  } else {
+    document.getElementById('step2_grade2').classList.remove('hidden');
+    document.getElementById('studentInfo2').innerHTML =
+      `👤 <strong>${currentStudent.grade}학년 ${currentStudent.class_num}반 ${currentStudent.student_num}번 ${currentStudent.name}</strong> (${currentStudent.department})`;
+    if (currentStudent.department === '금융비즈니스과') {
+      document.getElementById('majorGroup_finance').classList.remove('hidden');
+      document.getElementById('majorGroup_culture').classList.add('hidden');
+    } else {
+      document.getElementById('majorGroup_finance').classList.add('hidden');
+      document.getElementById('majorGroup_culture').classList.remove('hidden');
+    }
+    if (existingRecord) restoreSelection2();
+  }
+}
+
+function updateStepUI(activeStep) {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById(`si${i}`);
+    el.classList.remove('active','done');
+    el.style.opacity = '1';
+    if (i < activeStep) { el.classList.add('done'); }
+    else if (i === activeStep) { el.classList.add('active'); }
+    else { el.style.opacity = '0.4'; }
+  }
+  for (let i = 1; i <= 2; i++) {
+    const el = document.getElementById(`sl${i}`);
+    el.classList.toggle('done', i < activeStep);
+  }
+}
+
+function restoreSelection1() {
+  if (!existingRecord) return;
+  const map = { korean:'subject_korean', math:'subject_math', english:'subject_english', lang2:'subject_second_lang' };
+  for (const [group, field] of Object.entries(map)) {
+    const val = existingRecord[field];
+    if (!val) continue;
+    document.querySelectorAll(`[name="${group}"]`).forEach(radio => {
+      if (radio.value === val) { radio.closest('.radio-option').classList.add('selected'); radio.checked = true; }
+    });
+  }
+}
+
+function restoreSelection2() {
+  if (!existingRecord) return;
+  const map = { social:'subject_social_science', major:'subject_major' };
+  for (const [group, field] of Object.entries(map)) {
+    const val = existingRecord[field];
+    if (!val) continue;
+    document.querySelectorAll(`[name="${group}"]`).forEach(radio => {
+      if (radio.value === val) { radio.closest('.radio-option').classList.add('selected'); radio.checked = true; }
+    });
+  }
+}
+
+// ===== 과목 선택 =====
+window.selectSubject = function(el, group) {
+  document.querySelectorAll(`[name="${group}"]`).forEach(r => r.closest('.radio-option').classList.remove('selected'));
+  el.classList.add('selected');
+};
+
+// ===== 1학년 제출 =====
+window.submitGrade1 = async function() {
+  const korean   = document.querySelector('[name="korean"]:checked');
+  const math     = document.querySelector('[name="math"]:checked');
+  const english  = document.querySelector('[name="english"]:checked');
+  const lang2    = document.querySelector('[name="lang2"]:checked');
+  if (!korean || !math || !english || !lang2) {
+    showError('step2Error1','모든 과목을 선택해 주세요.'); return;
+  }
+  document.getElementById('step2Error1').style.display = 'none';
+  const data = buildData({
+    subject_korean: korean.value, subject_math: math.value,
+    subject_english: english.value, subject_second_lang: lang2.value,
+    subject_social_science: '', subject_major: ''
+  });
+  await saveSelection(data, 'btnSubmit1');
+};
+
+// ===== 2학년 제출 =====
+window.submitGrade2 = async function() {
+  const social = document.querySelector('[name="social"]:checked');
+  const major  = document.querySelector('[name="major"]:checked');
+  if (!social || !major) {
+    showError('step2Error2','모든 과목을 선택해 주세요.'); return;
+  }
+  document.getElementById('step2Error2').style.display = 'none';
+  const data = buildData({
+    subject_social_science: social.value, subject_major: major.value,
+    subject_korean: '', subject_math: '', subject_english: '', subject_second_lang: ''
+  });
+  await saveSelection(data, 'btnSubmit2');
+};
+
+function buildData(subjects) {
+  return {
+    student_id: currentStudent.id,
+    grade: currentStudent.grade,
+    class_num: currentStudent.class_num,
+    student_num: currentStudent.student_num,
+    name: currentStudent.name,
+    department: currentStudent.department,
+    submitted_at: Date.now(),
+    updated_at: Date.now(),
+    ...subjects
+  };
+}
+
+async function saveSelection(data, btnId) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loading-spinner"></div> 저장 중...';
+  try {
+    await set(ref(db, `selections/${currentStudent.id}`), data);
+    showComplete(data);
+  } catch(e) {
+    alert('저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> 선택과목 신청하기';
+  }
+}
+
+function showComplete(data) {
+  document.querySelectorAll('[id^="step2_"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('step3').classList.remove('hidden');
+  updateStepUI(3);
+  let html = `<div class="card" style="padding:18px;margin-bottom:12px;">
+    <div class="info-row"><div class="info-label">학생</div><div class="info-value">${data.grade}학년 ${data.class_num}반 ${data.student_num}번 ${data.name}</div></div>
+    <div class="info-row"><div class="info-label">학과</div><div class="info-value">${data.department}</div></div>`;
+  if (data.grade === 1) {
+    html += `
+    <div class="info-row"><div class="info-label">1학기 고정</div><div class="info-value"><span class="info-badge">문학</span><span class="info-badge">대수</span><span class="info-badge">영어I</span></div></div>
+    <div class="info-row"><div class="info-label">국어 (2학기)</div><div class="info-value"><span class="info-badge">${data.subject_korean}</span></div></div>
+    <div class="info-row"><div class="info-label">수학 (2학기)</div><div class="info-value"><span class="info-badge">${data.subject_math}</span></div></div>
+    <div class="info-row"><div class="info-label">영어 (2학기)</div><div class="info-value"><span class="info-badge">${data.subject_english}</span></div></div>
+    <div class="info-row"><div class="info-label">제2외국어</div><div class="info-value"><span class="info-badge">${data.subject_second_lang}</span></div></div>`;
+  } else {
+    html += `
+    <div class="info-row"><div class="info-label">사회/과학</div><div class="info-value"><span class="info-badge">${data.subject_social_science.replace(/-/g,' → ')}</span></div></div>
+    <div class="info-row"><div class="info-label">전문교과</div><div class="info-value"><span class="info-badge">${data.subject_major}</span></div></div>`;
+  }
+  html += `</div>`;
+  document.getElementById('resultSummary').innerHTML = html;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.goBack = function() {
+  document.querySelectorAll('[id^="step2_"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('step1').classList.remove('hidden');
+  updateStepUI(1);
+};
+
+// ===== PIN 모달 =====
+window.openPinModal = function() {
+  pinAttempts = parseInt(sessionStorage.getItem('pinAttempts') || '0');
+  if (pinAttempts >= MAX_PIN_ATTEMPTS) {
+    document.getElementById('pinLockMsg').style.display = 'block';
+    document.getElementById('pinLockMsg').textContent = '시도 횟수 초과. 선생님께 문의하세요.';
+    ['pin1','pin2','pin3','pin4'].forEach(id => document.getElementById(id).disabled = true);
+  }
+  document.getElementById('pinModal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('pin1').focus(), 100);
+};
+window.closePinModal = function() {
+  document.getElementById('pinModal').classList.add('hidden');
+  ['pin1','pin2','pin3','pin4'].forEach(id => { document.getElementById(id).value = ''; document.getElementById(id).disabled = false; });
+  document.getElementById('pinError').style.display = 'none';
+};
+window.pinNext = function(el, nextId) { if (el.value.length === 1) document.getElementById(nextId).focus(); };
+window.pinKeyDown = function(e, prevId, curId) {
+  if (e.key === 'Backspace' && document.getElementById(curId).value === '' && prevId) {
+    document.getElementById(prevId).focus();
+  }
+};
+window.pinSubmit = async function() {
+  if (pinAttempts >= MAX_PIN_ATTEMPTS) return;
+  const pin = ['pin1','pin2','pin3','pin4'].map(id => document.getElementById(id).value).join('');
+  if (pin.length < 4) return;
+
+  // Firebase에서 PIN 해시 가져와서 비교
+  try {
+    const snap = await get(ref(db, 'config/student_pin_hash'));
+    const storedHash = snap.exists() ? snap.val() : STUDENT_PIN_HASH;
+    const inputHash = await sha256(pin);
+    if (inputHash === storedHash) {
+      sessionStorage.removeItem('pinAttempts');
+      closePinModal();
+      showStep2();
+    } else {
+      pinAttempts++;
+      sessionStorage.setItem('pinAttempts', pinAttempts);
+      document.getElementById('pinError').style.display = 'block';
+      if (pinAttempts >= MAX_PIN_ATTEMPTS) {
+        document.getElementById('pinLockMsg').style.display = 'block';
+        document.getElementById('pinLockMsg').textContent = '5회 오류. 선생님께 문의하세요.';
+        ['pin1','pin2','pin3','pin4'].forEach(id => document.getElementById(id).disabled = true);
+      } else {
+        ['pin1','pin2','pin3','pin4'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('pin1').focus();
+      }
+    }
+  } catch(e) {
+    document.getElementById('pinError').style.display = 'block';
+  }
+};
+
+// ===== QR 자동 입력 =====
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const sid = params.get('sid');
+  if (sid) {
+    const parts = sid.split('-');
+    if (parts.length === 3) {
+      const [g,c,n] = parts;
+      const selGrade = document.getElementById('selGrade');
+      selGrade.value = g;
+      selGrade.dispatchEvent(new Event('change'));
+      setTimeout(() => {
+        document.getElementById('selClass').value = c;
+        document.getElementById('selClass').dispatchEvent(new Event('change'));
+        setTimeout(() => document.getElementById('selNum').value = n, 60);
+      }, 60);
+    }
+  }
+});
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+}
+</script>
+</body>
+</html>

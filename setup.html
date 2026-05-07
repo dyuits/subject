@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>초기 설정 - Firebase 데이터 업로드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: linear-gradient(135deg, #fce4ec, #f3e5f5); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.box { background: white; border-radius: 24px; padding: 40px; max-width: 560px; width: 100%; box-shadow: 0 20px 60px rgba(233,30,140,0.15); }
+h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px; }
+.sub { font-size: 13px; color: #888; margin-bottom: 28px; line-height: 1.6; }
+.warn { background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 13px; color: #856404; margin-bottom: 22px; line-height: 1.6; }
+.step { background: #f8faff; border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
+.step-title { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-num { width: 26px; height: 26px; background: linear-gradient(135deg,#e91e8c,#ff6b9d); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.step p { font-size: 13px; color: #555; line-height: 1.7; }
+.step code { background: #fce4ec; color: #c62828; padding: 2px 7px; border-radius: 6px; font-size: 12px; font-family: monospace; }
+.btn { width: 100%; padding: 15px; background: linear-gradient(135deg,#e91e8c,#ff6b9d); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; margin-top: 10px; transition: all 0.2s; box-shadow: 0 6px 20px rgba(233,30,140,0.3); }
+.btn:hover { transform: translateY(-2px); }
+.btn:disabled { background: #e0e0e0; transform: none; box-shadow: none; cursor: not-allowed; }
+.log { margin-top: 20px; background: #1a1a2e; border-radius: 12px; padding: 16px; font-family: monospace; font-size: 12px; color: #aaa; max-height: 200px; overflow-y: auto; display: none; }
+.log .ok   { color: #22c55e; }
+.log .err  { color: #f87171; }
+.log .info { color: #60a5fa; }
+.progress-bar { height: 8px; background: #f0d0e0; border-radius: 4px; overflow: hidden; margin-top: 10px; display: none; }
+.progress-fill { height: 100%; background: linear-gradient(90deg,#e91e8c,#ff6b9d); border-radius: 4px; transition: width 0.3s; width: 0%; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🌸 Firebase 초기 설정</h1>
+  <p class="sub">학생 데이터를 Firebase Realtime Database에 업로드하고<br>관리자·수정 비밀번호를 설정합니다. <strong>최초 1회만</strong> 실행하세요.</p>
+
+  <div class="warn">⚠️ <strong>주의:</strong> 이 페이지는 <code>js/firebase-config.js</code>에 실제 Firebase 설정값이 입력된 후에 사용하세요. <code>YOUR_API_KEY</code>가 그대로라면 작동하지 않습니다.</div>
+
+  <div class="step">
+    <div class="step-title"><span class="step-num">1</span> Firebase 설정 확인</div>
+    <p><code>js/firebase-config.js</code>를 열어 Firebase Console에서 복사한 실제 값으로 교체하세요.<br>apiKey, authDomain, databaseURL, projectId 등 모두 필요합니다.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-title"><span class="step-num">2</span> Firebase 보안 규칙 설정</div>
+    <p>Firebase Console → Realtime Database → 규칙 탭에 아래 규칙을 붙여넣으세요:<br><br>
+    <code>{"rules":{"students":{".read":true,".write":false},"selections":{".read":true,".write":true},"config":{".read":true,".write":false}}}</code><br><br>
+    ※ 초기 설정 후 <code>config</code>의 <code>.write</code>를 <code>false</code>로 변경하세요.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-title"><span class="step-num">3</span> 비밀번호 설정</div>
+    <p>관리자 비밀번호와 학생 수정 PIN을 입력하세요. SHA-256으로 해시되어 Firebase에 저장됩니다.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:6px;">관리자 비밀번호</label>
+        <input type="password" id="adminPwd" placeholder="영문+숫자 8자 이상" style="width:100%;padding:10px 13px;border:1.5px solid #f0d0e0;border-radius:10px;font-size:14px;font-family:inherit;">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:6px;">학생 수정 PIN (4자리)</label>
+        <input type="password" id="studentPin" placeholder="숫자 4자리" maxlength="4" style="width:100%;padding:10px 13px;border:1.5px solid #f0d0e0;border-radius:10px;font-size:14px;font-family:inherit;">
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-title"><span class="step-num">4</span> 데이터 업로드</div>
+    <p>버튼을 클릭하면 197명의 학생 데이터와 설정값이 Firebase에 업로드됩니다.</p>
+  </div>
+
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+  <button class="btn" id="uploadBtn" onclick="startUpload()">🚀 Firebase에 데이터 업로드 시작</button>
+  <div class="log" id="log"></div>
+</div>
+
+<script src="js/firebase-config.js"></script>
+<script src="js/students-data.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+window.startUpload = async function() {
+  const adminPwd   = document.getElementById('adminPwd').value.trim();
+  const studentPin = document.getElementById('studentPin').value.trim();
+
+  if (!adminPwd || adminPwd.length < 4) { alert('관리자 비밀번호를 4자 이상 입력하세요.'); return; }
+  if (!studentPin || !/^\d{4}$/.test(studentPin)) { alert('학생 수정 PIN은 숫자 4자리로 입력하세요.'); return; }
+  if (FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') { alert('firebase-config.js에 실제 Firebase 설정값을 먼저 입력하세요!'); return; }
+  if (!confirm('Firebase에 학생 데이터를 업로드합니다. 기존 데이터가 덮어쓰여질 수 있습니다. 계속하시겠습니까?')) return;
+
+  const btn = document.getElementById('uploadBtn');
+  btn.disabled = true;
+  btn.textContent = '업로드 중...';
+  const log = document.getElementById('log');
+  const bar = document.getElementById('progressBar');
+  const fill = document.getElementById('progressFill');
+  log.style.display = 'block';
+  bar.style.display = 'block';
+
+  function addLog(msg, type='info') {
+    const cls = type === 'ok' ? 'ok' : type === 'err' ? 'err' : 'info';
+    log.innerHTML += `<div class="${cls}">${msg}</div>`;
+    log.scrollTop = log.scrollHeight;
+  }
+
+  try {
+    const app = initializeApp(FIREBASE_CONFIG);
+    const db  = getDatabase(app);
+
+    addLog('🔗 Firebase 연결 중...');
+
+    // 비밀번호 해시
+    const adminHash = await sha256(adminPwd);
+    const pinHash   = await sha256(studentPin);
+
+    // config 저장
+    addLog('⚙️ 설정값 저장 중...');
+    await set(ref(db, 'config'), { admin_password_hash: adminHash, student_pin_hash: pinHash });
+    addLog('✅ 설정값 저장 완료', 'ok');
+
+    // 학생 데이터 업로드
+    const students = Object.values(STUDENTS_DATA);
+    addLog(`📚 학생 데이터 업로드 시작 (총 ${students.length}명)...`);
+
+    for (let i = 0; i < students.length; i++) {
+      const s = students[i];
+      await set(ref(db, `students/${s.id}`), s);
+      const pct = Math.round((i+1)/students.length*100);
+      fill.style.width = pct + '%';
+      if ((i+1) % 20 === 0 || i === students.length-1) {
+        addLog(`  ${i+1}/${students.length}명 완료 (${pct}%)`, 'info');
+      }
+    }
+
+    addLog('🎉 모든 데이터 업로드 완료!', 'ok');
+    addLog('');
+    addLog('📌 다음 단계:', 'info');
+    addLog('  1. Firebase Console에서 보안 규칙 확인');
+    addLog('  2. index.html / parent.html / admin.html 에서 테스트');
+    addLog('  3. 이 setup.html 페이지는 삭제하거나 접근 제한 권장');
+    btn.textContent = '✅ 업로드 완료!';
+    btn.style.background = 'linear-gradient(135deg,#059669,#34d399)';
+  } catch(e) {
+    addLog(`❌ 오류 발생: ${e.message}`, 'err');
+    btn.disabled = false;
+    btn.textContent = '🚀 다시 시도';
+  }
+};
+</script>
+</body>
+</html>

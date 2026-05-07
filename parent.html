@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>학부모 조회 - 제주중앙고 선택과목</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple-main: #7c3aed;
+  --purple-deep: #5b21b6;
+  --purple-light: #c4b5fd;
+  --purple-pale: #f5f3ff;
+  --pink-light: #ffb7c5;
+  --green-main: #059669;
+  --cream: #fffbf0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: linear-gradient(160deg, #fce4ec 0%, #f3e5f5 40%, #ede7f6 70%, #e8eaf6 100%);
+  min-height: 100vh;
+  position: relative; overflow-x: hidden;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 0 0 60px;
+}
+.petals-container {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0; overflow: hidden;
+}
+.petal {
+  position: absolute; top: -20px;
+  border-radius: 50% 0 50% 0; opacity: 0.5;
+  animation: fall linear infinite;
+}
+.petal:nth-child(odd)  { width:10px; height:10px; background: radial-gradient(#c4b5fd, #7c3aed); }
+.petal:nth-child(even) { width: 8px; height: 8px; background: radial-gradient(#fbcfe8, #ec4899); border-radius: 50%; }
+.petal:nth-child(1)  { left:8%;  animation-duration:9s;  animation-delay:0s; }
+.petal:nth-child(2)  { left:18%; animation-duration:12s; animation-delay:2s; }
+.petal:nth-child(3)  { left:28%; animation-duration:10s; animation-delay:1s; }
+.petal:nth-child(4)  { left:38%; animation-duration:13s; animation-delay:3s; }
+.petal:nth-child(5)  { left:48%; animation-duration:11s; animation-delay:0.5s; }
+.petal:nth-child(6)  { left:58%; animation-duration:9.5s; animation-delay:4s; }
+.petal:nth-child(7)  { left:68%; animation-duration:12.5s; animation-delay:1.5s; }
+.petal:nth-child(8)  { left:78%; animation-duration:10.5s; animation-delay:2.5s; }
+.petal:nth-child(9)  { left:88%; animation-duration:11.5s; animation-delay:3.5s; }
+@keyframes fall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 0.7; }
+  50%  { transform: translateY(50vh) translateX(25px) rotate(180deg); opacity: 0.4; }
+  100% { transform: translateY(110vh) translateX(-15px) rotate(360deg); opacity: 0; }
+}
+.container { width: 100%; max-width: 500px; padding: 0 16px; position: relative; z-index: 1; }
+.header { text-align: center; padding: 36px 0 24px; }
+.header .icon {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px; font-size: 30px; color: white;
+  box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+}
+.header h1 { font-size: 21px; font-weight: 700; color: #2d2d2d; margin-bottom: 5px; }
+.header .subtitle { font-size: 13px; color: #666; }
+.header .may-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: white; font-size: 12px; font-weight: 600;
+  padding: 5px 14px; border-radius: 20px; margin-top: 10px;
+  box-shadow: 0 3px 12px rgba(124,58,237,0.25);
+}
+.card {
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+  border-radius: 24px; padding: 26px; margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(124,58,237,0.12);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+.card-title {
+  font-size: 16px; font-weight: 700; color: var(--purple-deep);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+  padding-bottom: 12px; border-bottom: 2px solid #ede9fe;
+}
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 7px; }
+.form-select, .form-input {
+  width: 100%; padding: 13px 16px;
+  border: 1.5px solid #ddd6fe; border-radius: 12px;
+  font-size: 15px; font-family: inherit; color: #222;
+  background: #faf8ff; transition: all 0.2s; -webkit-appearance: none;
+}
+.form-select:focus, .form-input:focus {
+  outline: none; border-color: var(--purple-main); background: white;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
+.notice {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border-left: 4px solid var(--purple-main);
+  border-radius: 0 12px 12px 0;
+  padding: 13px 15px; margin-bottom: 18px;
+  font-size: 12.5px; color: #5b21b6; line-height: 1.7;
+}
+.notice strong { color: var(--purple-deep); }
+.btn-primary {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: white; border: none; border-radius: 14px;
+  font-size: 16px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: all 0.25s;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  box-shadow: 0 6px 20px rgba(124,58,237,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(124,58,237,0.35); }
+.btn-secondary {
+  width: 100%; padding: 14px; background: white; color: var(--purple-deep);
+  border: 2px solid var(--purple-light); border-radius: 14px;
+  font-size: 15px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: all 0.2s; margin-top: 10px;
+}
+.btn-secondary:hover { background: var(--purple-pale); border-color: var(--purple-main); }
+.error-msg { color: #e53935; font-size: 13px; margin-bottom: 12px; display: none; padding: 10px 14px; background: #fff5f5; border-radius: 10px; border-left: 3px solid #e53935; }
+/* 결과 */
+.student-header {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-radius: 20px; padding: 22px;
+  color: white; margin-bottom: 16px; text-align: center;
+  box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+}
+.student-header .name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+.student-header .meta { font-size: 13px; opacity: 0.88; }
+.status-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 700;
+  margin-top: 12px;
+}
+.status-done    { background: rgba(255,255,255,0.2); color: white; border: 1.5px solid rgba(255,255,255,0.4); }
+.status-pending { background: rgba(251,191,36,0.25); color: #fde047; border: 1.5px solid rgba(253,224,71,0.4); }
+.subject-card { border-radius: 18px; overflow: hidden; margin-bottom: 12px; box-shadow: 0 3px 16px rgba(0,0,0,0.09); }
+.subject-card-header {
+  padding: 13px 18px; font-size: 13px; font-weight: 700; color: white;
+  display: flex; align-items: center; gap: 8px;
+}
+.subject-card-body { background: white; padding: 14px 18px; }
+.subject-item {
+  display: flex; align-items: flex-start;
+  padding: 11px 0; border-bottom: 1px solid #f3f4f6;
+}
+.subject-item:last-child { border-bottom: none; }
+.subject-semester {
+  font-size: 11px; font-weight: 700; padding: 3px 9px;
+  border-radius: 8px; margin-right: 12px; flex-shrink: 0; margin-top: 2px;
+}
+.sem1 { background: #dbeafe; color: #1d4ed8; }
+.sem2 { background: #dcfce7; color: #16a34a; }
+.both { background: #fef9c3; color: #a16207; }
+.subject-name-wrap .main { font-size: 14px; font-weight: 600; color: #111; }
+.subject-name-wrap .sub  { font-size: 11px; color: #888; margin-top: 2px; }
+.not-submitted { text-align: center; padding: 44px 20px; }
+.not-submitted i { font-size: 52px; color: #fbbf24; margin-bottom: 16px; display: block; }
+.not-submitted p { font-size: 15px; color: #666; line-height: 1.7; }
+.submitted-time { font-size: 11px; color: #999; text-align: right; margin-top: 6px; }
+.realtime-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; color: #059669; background: #dcfce7;
+  padding: 4px 10px; border-radius: 20px; font-weight: 600;
+}
+.realtime-badge .dot { width: 7px; height: 7px; background: #059669; border-radius: 50%; animation: pulse 1.5s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+.hidden { display: none !important; }
+.loading-spinner { display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.color1 { background: linear-gradient(135deg,#1d4ed8,#3b82f6); }
+.color2 { background: linear-gradient(135deg,#059669,#34d399); }
+.color3 { background: linear-gradient(135deg,#d97706,#fbbf24); }
+.color4 { background: linear-gradient(135deg,#dc2626,#f87171); }
+.color5 { background: linear-gradient(135deg,#0891b2,#22d3ee); }
+</style>
+</head>
+<body>
+<div class="petals-container">
+  <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+  <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+</div>
+
+<div class="container">
+  <header class="header">
+    <div class="icon"><i class="fas fa-users"></i></div>
+    <h1>학부모 조회</h1>
+    <p class="subtitle">자녀의 선택과목 신청 현황 확인</p>
+    <div class="may-badge">🌸 2027학년도 고교학점제</div>
+  </header>
+
+  <section class="card" id="queryForm">
+    <div class="card-title"><i class="fas fa-search"></i> 자녀 정보 입력</div>
+    <div class="notice">
+      <strong>📌 조회 안내</strong><br>
+      자녀의 학번(학년·반·번호), 이름, 생년월일을 입력하시면<br>
+      선택과목 신청 현황을 실시간으로 확인하실 수 있습니다.
+    </div>
+    <div class="form-group">
+      <label class="form-label">학년</label>
+      <select class="form-select" id="selGrade"><option value="">학년 선택</option><option value="1">1학년</option><option value="2">2학년</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">반</label>
+      <select class="form-select" id="selClass"><option value="">반 선택</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">번호</label>
+      <select class="form-select" id="selNum"><option value="">번호 선택</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">학생 이름</label>
+      <input type="text" class="form-input" id="inputName" placeholder="자녀 이름 입력" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label">생년월일 (예: 20100213)</label>
+      <input type="tel" class="form-input" id="inputBirth" placeholder="생년월일 8자리" maxlength="8" autocomplete="off">
+    </div>
+    <div class="error-msg" id="queryError"></div>
+    <button class="btn-primary" id="btnQuery" onclick="queryStudent()">
+      <i class="fas fa-search"></i> 신청 현황 조회
+    </button>
+  </section>
+
+  <section id="resultSection" class="hidden">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+      <span class="realtime-badge"><span class="dot"></span> 실시간 연동 중</span>
+    </div>
+    <div class="student-header" id="studentHeader"></div>
+    <div id="resultContent"></div>
+    <div class="card" style="padding:16px;">
+      <button class="btn-secondary" style="margin-top:0" onclick="resetQuery()">
+        <i class="fas fa-arrow-left"></i> 다시 조회하기
+      </button>
+    </div>
+  </section>
+</div>
+
+<script src="js/firebase-config.js"></script>
+<script src="js/students-data.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const app = initializeApp(FIREBASE_CONFIG);
+const db  = getDatabase(app);
+
+let currentListener = null;
+let currentStudentData = null;
+
+document.getElementById('selGrade').addEventListener('change', function() {
+  const grade = this.value;
+  const selClass = document.getElementById('selClass');
+  const selNum   = document.getElementById('selNum');
+  selClass.innerHTML = '<option value="">반 선택</option>';
+  selNum.innerHTML   = '<option value="">번호 선택</option>';
+  if (!grade) return;
+  [7,8,9,10].forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c + '반';
+    selClass.appendChild(opt);
+  });
+});
+
+document.getElementById('selClass').addEventListener('change', function() {
+  const grade = document.getElementById('selGrade').value;
+  const cls   = this.value;
+  const selNum = document.getElementById('selNum');
+  selNum.innerHTML = '<option value="">번호 선택</option>';
+  if (!cls) return;
+  let maxNum = 25;
+  if (grade === '2' && ['8','9','10'].includes(cls)) maxNum = 24;
+  for (let i = 1; i <= maxNum; i++) {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = i + '번'; selNum.appendChild(opt);
+  }
+});
+
+window.queryStudent = function() {
+  const grade = document.getElementById('selGrade').value;
+  const cls   = document.getElementById('selClass').value;
+  const num   = document.getElementById('selNum').value;
+  const name  = document.getElementById('inputName').value.trim();
+  const birth = document.getElementById('inputBirth').value.trim();
+  const errEl = document.getElementById('queryError');
+  errEl.style.display = 'none';
+
+  if (!grade || !cls || !num) { showErr('학년, 반, 번호를 모두 선택해 주세요.'); return; }
+  if (!name)                  { showErr('학생 이름을 입력해 주세요.'); return; }
+  if (!birth || birth.length !== 8 || !/^\d{8}$/.test(birth)) { showErr('생년월일을 8자리 숫자로 입력해 주세요.'); return; }
+
+  const studentId = `${grade}-${cls}-${num}`;
+  const student   = STUDENTS_DATA[studentId];
+
+  if (!student) { showErr('학생 정보를 찾을 수 없습니다. 학년·반·번호를 확인해 주세요.'); return; }
+
+  const dbBirth = student.birth.replace(/\./g,'').replace(/[^0-9]/g,'').substring(0,8);
+  if (dbBirth !== birth)   { showErr('생년월일이 일치하지 않습니다.'); return; }
+  if (student.name !== name) { showErr('이름이 일치하지 않습니다.'); return; }
+
+  currentStudentData = student;
+  startRealtimeWatch(studentId);
+};
+
+function startRealtimeWatch(studentId) {
+  // 이전 리스너 정리
+  if (currentListener) {
+    off(ref(db, `selections/${currentListener}`));
+    currentListener = null;
+  }
+  currentListener = studentId;
+
+  const selRef = ref(db, `selections/${studentId}`);
+  onValue(selRef, (snap) => {
+    const selection = snap.exists() ? snap.val() : null;
+    renderResult(currentStudentData, selection);
+  });
+
+  document.getElementById('queryForm').classList.add('hidden');
+  document.getElementById('resultSection').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderResult(student, selection) {
+  const statusBadge = selection
+    ? `<span class="status-badge status-done"><i class="fas fa-check-circle"></i> 신청 완료</span>`
+    : `<span class="status-badge status-pending"><i class="fas fa-clock"></i> 미신청</span>`;
+
+  document.getElementById('studentHeader').innerHTML = `
+    <div class="name">${student.name}</div>
+    <div class="meta">${student.grade}학년 ${student.class_num}반 ${student.student_num}번 · ${student.department}</div>
+    ${statusBadge}`;
+
+  let content = '';
+  if (!selection) {
+    content = `<div class="card"><div class="not-submitted">
+      <i class="fas fa-exclamation-circle"></i>
+      <p>아직 선택과목 신청을 하지 않았습니다.<br>신청 기간(5/18~5/20)에 신청해 주세요.</p>
+    </div></div>`;
+  } else {
+    const dt = new Date(selection.submitted_at);
+    const timeStr = `${dt.getFullYear()}.${pad(dt.getMonth()+1)}.${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+
+    if (student.grade === 1) {
+      content = `
+      <div class="subject-card">
+        <div class="subject-card-header color1"><i class="fas fa-book"></i> 1학기 공통 필수 (고정)</div>
+        <div class="subject-card-body">
+          <div class="subject-item"><span class="subject-semester sem1">1학기</span><div class="subject-name-wrap"><div class="main">문학</div><div class="sub">국어 교과 / 필수</div></div></div>
+          <div class="subject-item"><span class="subject-semester sem1">1학기</span><div class="subject-name-wrap"><div class="main">대수</div><div class="sub">수학 교과 / 필수</div></div></div>
+          <div class="subject-item"><span class="subject-semester sem1">1학기</span><div class="subject-name-wrap"><div class="main">영어 I</div><div class="sub">영어 교과 / 필수</div></div></div>
+        </div>
+      </div>
+      <div class="subject-card">
+        <div class="subject-card-header color2"><i class="fas fa-pen-nib"></i> 국어 (2학기 선택)</div>
+        <div class="subject-card-body"><div class="subject-item"><span class="subject-semester sem2">2학기</span><div class="subject-name-wrap"><div class="main">${selection.subject_korean}</div><div class="sub">국어 교과 / 선택</div></div></div></div>
+      </div>
+      <div class="subject-card">
+        <div class="subject-card-header color3"><i class="fas fa-calculator"></i> 수학 (2학기 선택)</div>
+        <div class="subject-card-body"><div class="subject-item"><span class="subject-semester sem2">2학기</span><div class="subject-name-wrap"><div class="main">${selection.subject_math}</div><div class="sub">수학 교과 / 선택</div></div></div></div>
+      </div>
+      <div class="subject-card">
+        <div class="subject-card-header color4"><i class="fas fa-language"></i> 영어 (2학기 선택)</div>
+        <div class="subject-card-body"><div class="subject-item"><span class="subject-semester sem2">2학기</span><div class="subject-name-wrap"><div class="main">${selection.subject_english}</div><div class="sub">영어 교과 / 선택</div></div></div></div>
+      </div>
+      <div class="subject-card">
+        <div class="subject-card-header color5"><i class="fas fa-globe"></i> 제2외국어 (1·2학기)</div>
+        <div class="subject-card-body"><div class="subject-item"><span class="subject-semester both">1·2학기</span><div class="subject-name-wrap"><div class="main">${selection.subject_second_lang}</div><div class="sub">제2외국어 교과 / 선택</div></div></div></div>
+      </div>`;
+    } else {
+      content = `
+      <div class="subject-card">
+        <div class="subject-card-header color1"><i class="fas fa-globe-asia"></i> 사회 / 과학 (선택)</div>
+        <div class="subject-card-body"><div class="subject-item"><span class="subject-semester both">1·2학기</span><div class="subject-name-wrap"><div class="main">${selection.subject_social_science.replace(/-/g,' → ')}</div><div class="sub">사회/과학 교과 / 선택</div></div></div></div>
+      </div>
+      <div class="subject-card">
+        <div class="subject-card-header color2"><i class="fas fa-briefcase"></i> 전문교과 (선택)</div>
+        <div class="subject-card-body"><div class="subject-item"><span class="subject-semester both">1·2학기</span><div class="subject-name-wrap"><div class="main">${selection.subject_major}</div><div class="sub">전문교과 / 기초</div></div></div></div>
+      </div>`;
+    }
+    content += `<div class="card" style="padding:12px 16px;"><div class="submitted-time"><i class="fas fa-clock"></i> 신청일시: ${timeStr}</div></div>`;
+  }
+  document.getElementById('resultContent').innerHTML = content;
+}
+
+window.resetQuery = function() {
+  if (currentListener) {
+    off(ref(db, `selections/${currentListener}`));
+    currentListener = null;
+  }
+  currentStudentData = null;
+  document.getElementById('queryForm').classList.remove('hidden');
+  document.getElementById('resultSection').classList.add('hidden');
+  document.getElementById('inputName').value = '';
+  document.getElementById('inputBirth').value = '';
+};
+
+function showErr(msg) {
+  const el = document.getElementById('queryError');
+  el.textContent = msg; el.style.display = 'block';
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+</script>
+</body>
+</html>
