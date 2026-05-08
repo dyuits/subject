@@ -745,6 +745,7 @@ function restoreSelection2() {
 window.selectSubject = function(el, group) {
   document.querySelectorAll(`[name="${group}"]`).forEach(r => r.closest('.radio-option').classList.remove('selected'));
   el.classList.add('selected');
+  el.querySelector('input[type="radio"]').checked = true;
 };
 
 // ===== 1학년 제출 =====
