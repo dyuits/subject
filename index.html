@@ -173,7 +173,15 @@ body {
 .notice strong { color: var(--pink-deep); }
 
 /* 과목 선택 */
-.subject-group { margin-bottom: 22px; }
+.subject-group { margin-bottom: 8px; }
+.check-note {
+  font-size: 11.5px; color: #555; line-height: 1.55;
+  background: #fffbf0; border-left: 3px solid #f5a623;
+  border-radius: 0 8px 8px 0; padding: 8px 12px;
+  margin-bottom: 18px; display: flex; gap: 6px; align-items: flex-start;
+}
+.check-note i { color: #f5a623; font-size: 13px; margin-top: 1px; flex-shrink: 0; }
+.check-note strong { color: #e07b00; }
 .subject-group-title {
   font-size: 13px; font-weight: 700; color: #333;
   margin-bottom: 10px; padding: 9px 13px;
@@ -436,6 +444,7 @@ body {
         <div class="radio-text"><div class="subject-name">직무 의사소통</div><div class="subject-sub">국어 교과 / 2학기</div></div>
       </label>
     </div>
+    <div class="check-note"><i class="fas fa-check-square"></i><span><strong>check!</strong> 1학년 2학기 국어 과목을 선택합니다. 진학과 취업 중 고민하여 본인에게 필요한 과목을 선택해주세요.</span></div>
     <div class="subject-group">
       <div class="subject-group-title"><i class="fas fa-calculator"></i> 수학 <span class="badge">1과목</span></div>
       <label class="radio-option" onclick="selectSubject(this,'math')">
@@ -449,6 +458,7 @@ body {
         <div class="radio-text"><div class="subject-name">직무 수학</div><div class="subject-sub">수학 교과 / 2학기</div></div>
       </label>
     </div>
+    <div class="check-note"><i class="fas fa-check-square"></i><span><strong>check!</strong> 1학년 2학기 수학 과목을 선택합니다. 진학과 취업 중 고민하여 본인에게 필요한 과목을 선택해주세요.</span></div>
     <div class="subject-group">
       <div class="subject-group-title"><i class="fas fa-language"></i> 영어 <span class="badge">1과목</span></div>
       <label class="radio-option" onclick="selectSubject(this,'english')">
@@ -462,6 +472,7 @@ body {
         <div class="radio-text"><div class="subject-name">직무 영어</div><div class="subject-sub">영어 교과 / 2학기</div></div>
       </label>
     </div>
+    <div class="check-note"><i class="fas fa-check-square"></i><span><strong>check!</strong> 1학년 2학기 영어 과목을 선택합니다. 진학과 취업 중 고민하여 본인에게 필요한 과목을 선택해주세요.</span></div>
     <div class="subject-group">
       <div class="subject-group-title"><i class="fas fa-globe"></i> 제2외국어 <span class="badge">1과목</span></div>
       <label class="radio-option" onclick="selectSubject(this,'lang2')">
@@ -475,6 +486,7 @@ body {
         <div class="radio-text"><div class="subject-name">중국어</div><div class="subject-sub">1학기 중국어 → 2학기 중국어 회화</div></div>
       </label>
     </div>
+    <div class="check-note"><i class="fas fa-check-square"></i><span><strong>check!</strong> 일반-심화 과정으로 이루어진 선택과목입니다. 중국어의 경우 온라인으로 열릴 가능성이 존재합니다.</span></div>
     <div id="step2Error1" class="error-msg"></div>
     <button class="btn-primary" id="btnSubmit1" onclick="submitGrade1()"><i class="fas fa-paper-plane"></i> 선택과목 신청하기</button>
     <button class="btn-secondary" onclick="goBack()">← 이전으로</button>
