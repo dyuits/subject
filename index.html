@@ -819,14 +819,13 @@ function showComplete(data) {
     <div class="info-row"><div class="info-label">학과</div><div class="info-value">${data.department}</div></div>`;
   if (data.grade === 1) {
     html += `
-    <div class="info-row"><div class="info-label">1학기 고정</div><div class="info-value"><span class="info-badge">문학</span><span class="info-badge">대수</span><span class="info-badge">영어I</span></div></div>
-    <div class="info-row"><div class="info-label">국어 (2학기)</div><div class="info-value"><span class="info-badge">${data.subject_korean}</span></div></div>
-    <div class="info-row"><div class="info-label">수학 (2학기)</div><div class="info-value"><span class="info-badge">${data.subject_math}</span></div></div>
-    <div class="info-row"><div class="info-label">영어 (2학기)</div><div class="info-value"><span class="info-badge">${data.subject_english}</span></div></div>
+    <div class="info-row"><div class="info-label">국어</div><div class="info-value"><span class="info-badge">1학기 문학</span><span class="info-badge">2학기 ${data.subject_korean}</span></div></div>
+    <div class="info-row"><div class="info-label">수학</div><div class="info-value"><span class="info-badge">1학기 대수</span><span class="info-badge">2학기 ${data.subject_math}</span></div></div>
+    <div class="info-row"><div class="info-label">영어</div><div class="info-value"><span class="info-badge">1학기 영어 I</span><span class="info-badge">2학기 ${data.subject_english}</span></div></div>
     <div class="info-row"><div class="info-label">제2외국어</div><div class="info-value"><span class="info-badge">${data.subject_second_lang}</span></div></div>`;
   } else {
     html += `
-    <div class="info-row"><div class="info-label">사회/과학</div><div class="info-value"><span class="info-badge">${data.subject_social_science.replace(/-/g,' → ')}</span></div></div>
+    <div class="info-row"><div class="info-label">사회/과학</div><div class="info-value"><span class="info-badge">${data.subject_social_science.replace(/-/g,' - ')}</span></div></div>
     <div class="info-row"><div class="info-label">전문교과</div><div class="info-value"><span class="info-badge">${data.subject_major}</span></div></div>`;
   }
   html += `</div>`;

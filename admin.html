@@ -634,7 +634,7 @@ function renderList() {
       if (s.grade === 1) {
         subjects = [sel.subject_korean, sel.subject_math, sel.subject_english, sel.subject_second_lang].filter(Boolean).join(' / ');
       } else {
-        subjects = [sel.subject_social_science?.replace(/-/g,'→'), sel.subject_major].filter(Boolean).join(' / ');
+        subjects = [sel.subject_social_science?.replace(/-/g,' - '), sel.subject_major].filter(Boolean).join(' / ');
       }
     }
     const time = sel ? (() => { const d = new Date(sel.submitted_at); return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`; })() : '-';
@@ -785,7 +785,7 @@ function buildFormHTML(s, sel) {
       <div class="print-row"><div class="print-label">제2외국어</div><div class="print-value">${sel.subject_second_lang}</div></div>`;
   } else {
     subjects = `
-      <div class="print-row"><div class="print-label">사회/과학</div><div class="print-value">${sel.subject_social_science.replace(/-/g,' → ')}</div></div>
+      <div class="print-row"><div class="print-label">사회/과학</div><div class="print-value">${sel.subject_social_science.replace(/-/g,' - ')}</div></div>
       <div class="print-row"><div class="print-label">전문교과</div><div class="print-value">${sel.subject_major}</div></div>`;
   }
   return `
