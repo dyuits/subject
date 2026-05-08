@@ -6,7 +6,7 @@
 <title>QR코드 관리 - 제주중앙고</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Noto Sans KR', sans-serif; background: #f1f5f9; }
@@ -61,7 +61,8 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f1f5f9; }
   border: 1.5px solid #f0e0ea;
 }
 .qr-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
-.qr-card canvas { border-radius: 10px; margin-bottom: 10px; }
+.qr-card .qr-box { display: flex; justify-content: center; margin-bottom: 10px; }
+.qr-card .qr-box img, .qr-card .qr-box canvas { border-radius: 10px; }
 .qr-card .student-id { font-size: 11px; color: #e91e8c; font-weight: 700; margin-bottom: 3px; }
 .qr-card .student-name { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 2px; }
 .qr-card .student-dept { font-size: 10px; color: #94a3b8; }
@@ -124,24 +125,25 @@ function generate() {
   }
 
   grid.innerHTML = filtered.map(s =>
-    `<div class="qr-card" id="card-${s.id}">
-      <canvas id="qr-${s.id}"></canvas>
+    `<div class="qr-card">
+      <div class="qr-box" id="qr-${s.id}"></div>
       <div class="student-id">${s.grade}학년 ${s.class_num}반 ${s.student_num}번</div>
       <div class="student-name">${s.name}</div>
       <div class="student-dept">${s.department}</div>
     </div>`
   ).join('');
 
-  // QR 생성 (비동기, 배치)
+  // QR 생성 (qrcodejs)
   filtered.forEach((s, i) => {
     setTimeout(() => {
       const url = `${BASE_URL}?sid=${s.id}`;
-      QRCode.toCanvas(document.getElementById(`qr-${s.id}`), url, {
-        width: 130, margin: 1,
-        color: { dark: '#1a1a2e', light: '#ffffff' },
-        errorCorrectionLevel: 'M'
+      new QRCode(document.getElementById(`qr-${s.id}`), {
+        text: url,
+        width: 130, height: 130,
+        colorDark: '#1a1a2e', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
       });
-    }, i * 5);
+    }, i * 10);
   });
 }
 
