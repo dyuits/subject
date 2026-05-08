@@ -349,15 +349,6 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* 신청 확인 카드 */
-.lookup-card {
-  background: white; border-radius: 20px; padding: 28px 24px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.07); margin-top: 18px;
-  border-top: 4px solid #7c3aed;
-}
-.lookup-card .card-title { color: #7c3aed; }
-.lookup-selects { display: flex; gap: 8px; flex-wrap: wrap; }
-.lookup-selects select { flex: 1; min-width: 80px; }
 .btn-purple {
   width: 100%; padding: 14px; border-radius: 14px; border: none;
   background: linear-gradient(135deg, #7c3aed, #a78bfa);
@@ -390,6 +381,18 @@ body {
 .lookup-time { font-size: 11.5px; color: #9ca3af; text-align: right; margin-top: 12px; }
 .lookup-empty { text-align: center; padding: 20px; color: #9ca3af; font-size: 14px; }
 .lookup-empty i { font-size: 32px; color: #ddd6fe; display: block; margin-bottom: 10px; }
+
+/* 모드 탭 */
+.mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.mode-tab {
+  flex: 1; padding: 11px 8px; border-radius: 12px;
+  border: 1.5px solid #e2e8f0; background: white;
+  font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  color: #94a3b8; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.mode-tab.active.apply { background: linear-gradient(135deg,#e91e8c,#ff6b9d); border-color: transparent; color: white; box-shadow: 0 4px 12px rgba(233,30,140,0.3); }
+.mode-tab.active.check { background: linear-gradient(135deg,#7c3aed,#a78bfa); border-color: transparent; color: white; box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
+.mode-tab:hover:not(.active) { border-color: #cbd5e1; background: #f8faff; }
 
 /* 신청 마감 배너 */
 .closed-banner {
@@ -426,40 +429,90 @@ body {
       <div class="step-line" id="sl2"></div>
       <div class="step" id="si3" style="opacity:0.4"><div class="step-circle">3</div><div class="step-label">제출완료</div></div>
     </div>
-    <div class="card-title"><i class="fas fa-user-check"></i> 학생 본인 확인</div>
-    <div class="notice">
-      <strong>🌸 1차 수강신청 안내</strong><br>
-      신청 기간: <strong>2026년 5월 8일(금) ~ 5월 20일(수) 23:55</strong><br>
-      학번(학년·반·번호)과 생년월일을 입력하여 본인을 확인해 주세요.
+
+    <!-- 탭 버튼 -->
+    <div class="mode-tabs">
+      <button class="mode-tab active apply" id="tabApply" onclick="switchMode('apply')">
+        <i class="fas fa-pen-nib"></i> 과목 신청
+      </button>
+      <button class="mode-tab check" id="tabCheck" onclick="switchMode('check')">
+        <i class="fas fa-search"></i> 신청 내역 확인
+      </button>
     </div>
-    <div class="form-group">
-      <label class="form-label">학년</label>
-      <select class="form-select" id="selGrade">
-        <option value="">학년 선택</option>
-        <option value="1">1학년</option>
-        <option value="2">2학년</option>
-      </select>
+
+    <!-- 과목 신청 모드 -->
+    <div id="modeApply">
+      <div class="card-title"><i class="fas fa-user-check"></i> 학생 본인 확인</div>
+      <div class="notice">
+        <strong>🌸 1차 수강신청 안내</strong><br>
+        신청 기간: <strong>2026년 5월 8일(금) ~ 5월 20일(수) 23:55</strong><br>
+        학번(학년·반·번호)과 생년월일을 입력하여 본인을 확인해 주세요.
+      </div>
+      <div class="form-group">
+        <label class="form-label">학년</label>
+        <select class="form-select" id="selGrade">
+          <option value="">학년 선택</option>
+          <option value="1">1학년</option>
+          <option value="2">2학년</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">반</label>
+        <select class="form-select" id="selClass">
+          <option value="">반 선택</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">번호</label>
+        <select class="form-select" id="selNum">
+          <option value="">번호 선택</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">생년월일 (예: 20100213)</label>
+        <input type="tel" class="form-input" id="inputBirth" placeholder="생년월일 8자리 입력" maxlength="8" autocomplete="off">
+      </div>
+      <div id="step1Error" class="error-msg"></div>
+      <button class="btn-primary" id="btnVerify" onclick="verifyStudent()">
+        <i class="fas fa-arrow-right"></i> 본인 확인 후 과목 선택
+      </button>
     </div>
-    <div class="form-group">
-      <label class="form-label">반</label>
-      <select class="form-select" id="selClass">
-        <option value="">반 선택</option>
-      </select>
+
+    <!-- 신청 내역 확인 모드 -->
+    <div id="modeCheck" class="hidden">
+      <div class="card-title" style="color:#7c3aed"><i class="fas fa-search"></i> 내 신청 내역 확인</div>
+      <div class="notice" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-color:#c4b5fd;color:#5b21b6">
+        학번(학년·반·번호)과 생년월일을 입력하면 신청 내역을 확인할 수 있습니다.
+      </div>
+      <div class="form-group">
+        <label class="form-label">학년</label>
+        <select class="form-select" id="lkGrade" onchange="lkGradeChange()">
+          <option value="">학년 선택</option>
+          <option value="1">1학년</option>
+          <option value="2">2학년</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">반</label>
+        <select class="form-select" id="lkClass" onchange="lkClassChange()">
+          <option value="">반 선택</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">번호</label>
+        <select class="form-select" id="lkNum">
+          <option value="">번호 선택</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">생년월일 (예: 20100213)</label>
+        <input type="tel" class="form-input" id="lkBirth" placeholder="생년월일 8자리 입력" maxlength="8" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'')">
+      </div>
+      <button class="btn-purple" onclick="lookupMyRecord()">
+        <i class="fas fa-search"></i> 신청 내역 조회
+      </button>
+      <div id="lkResult"></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">번호</label>
-      <select class="form-select" id="selNum">
-        <option value="">번호 선택</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">생년월일 (예: 20100213)</label>
-      <input type="tel" class="form-input" id="inputBirth" placeholder="생년월일 8자리 입력" maxlength="8" autocomplete="off">
-    </div>
-    <div id="step1Error" class="error-msg"></div>
-    <button class="btn-primary" id="btnVerify" onclick="verifyStudent()">
-      <i class="fas fa-arrow-right"></i> 본인 확인 후 과목 선택
-    </button>
   </section>
 
   <!-- STEP 2: 1학년 과목 선택 -->
@@ -601,31 +654,6 @@ body {
     </button>
   </section>
 
-  <!-- 신청 내역 조회 -->
-  <section class="lookup-card">
-    <div class="card-title"><i class="fas fa-search"></i> 내 신청 내역 확인</div>
-    <div class="lookup-selects">
-      <select class="form-select" id="lkGrade" onchange="lkGradeChange()">
-        <option value="">학년</option>
-        <option value="1">1학년</option>
-        <option value="2">2학년</option>
-      </select>
-      <select class="form-select" id="lkClass" onchange="lkClassChange()">
-        <option value="">반</option>
-      </select>
-      <select class="form-select" id="lkNum">
-        <option value="">번호</option>
-      </select>
-    </div>
-    <div class="form-group" style="margin-top:12px;margin-bottom:0">
-      <input class="form-input" type="text" id="lkBirth" maxlength="8" inputmode="numeric"
-        placeholder="생년월일 8자리 (예: 20100213)" oninput="this.value=this.value.replace(/\D/g,'')">
-    </div>
-    <button class="btn-purple" onclick="lookupMyRecord()">
-      <i class="fas fa-search"></i> 신청 내역 조회
-    </button>
-    <div id="lkResult"></div>
-  </section>
 </div>
 
 <!-- PIN 모달 -->
@@ -997,6 +1025,17 @@ function showError(id, msg) {
   const el = document.getElementById(id);
   el.textContent = msg; el.style.display = 'block';
 }
+
+// ===== 탭 전환 =====
+window.switchMode = function(mode) {
+  const isCheck = mode === 'check';
+  document.getElementById('modeApply').classList.toggle('hidden', isCheck);
+  document.getElementById('modeCheck').classList.toggle('hidden', !isCheck);
+  document.getElementById('stepIndicator').classList.toggle('hidden', isCheck);
+  document.getElementById('tabApply').classList.toggle('active', !isCheck);
+  document.getElementById('tabCheck').classList.toggle('active', isCheck);
+  if (isCheck) document.getElementById('lkResult').innerHTML = '';
+};
 
 // ===== 신청 내역 조회 =====
 window.lkGradeChange = function() {
