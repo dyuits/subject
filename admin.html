@@ -283,9 +283,11 @@ tr:hover td { background: #fdf2f8; }
 @media print {
   body * { visibility: hidden !important; }
   #printArea, #printArea * { visibility: visible !important; }
-  #printArea { position: fixed; inset: 0; background: white; z-index: 9999; padding: 12mm 15mm; }
+  #printArea { position: fixed; inset: 0; background: white; z-index: 9999; padding: 14mm 18mm; }
+  .print-form { page-break-after: always; page-break-inside: avoid; margin-bottom: 0 !important; }
+  .print-form:last-child { page-break-after: auto; }
 }
-.print-form { border: 1px solid #ddd; border-radius: 6px; padding: 16px; margin-bottom: 16px; page-break-inside: avoid; }
+.print-form { border: 1px solid #ccc; border-radius: 6px; padding: 20px; margin-bottom: 16px; page-break-inside: avoid; }
 .print-form-header { text-align: center; padding-bottom: 12px; border-bottom: 2px solid #e91e8c; margin-bottom: 14px; }
 .print-form-header h2 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 3px; }
 .print-form-header p  { font-size: 11px; color: #888; }
@@ -303,18 +305,19 @@ tr:hover td { background: #fdf2f8; }
   font-size: 11.5px; color: #333; text-align: center;
   margin-bottom: 14px; line-height: 1.6;
 }
-.sign-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+.sign-table { width: 100%; border-collapse: collapse; margin-bottom: 0; border: 1px solid #ccc; }
 .sign-table th {
-  background: #f0f0f0; font-size: 11.5px; font-weight: 700; color: #333;
-  border: 1px solid #ccc; padding: 6px 0; text-align: center; width: 25%;
+  background: #f0f0f0; font-size: 12px; font-weight: 700; color: #333;
+  border: 1px solid #ccc; padding: 8px 0; text-align: center;
 }
+.sign-table th:first-child { width: 20%; }
 .sign-table td {
-  border: 1px solid #ccc; height: 54px; text-align: center;
-  vertical-align: bottom; font-size: 10px; color: #999; padding-bottom: 4px;
+  border: 1px solid #ccc; height: 58px; text-align: center;
+  vertical-align: bottom; font-size: 10.5px; color: #bbb; padding-bottom: 5px;
 }
 .sign-table td.sign-name {
-  background: #fafafa; font-size: 11px; color: #555; font-weight: 600;
-  vertical-align: middle; height: 28px;
+  background: #fafafa; font-size: 11.5px; color: #444; font-weight: 600;
+  vertical-align: middle; height: 30px;
 }
 #printArea { display: none; }
 
@@ -849,7 +852,6 @@ function buildFormHTML(s, sel) {
               <th>구분</th>
               <th>학생</th>
               <th>학부모</th>
-              <th>담임교사</th>
             </tr>
           </thead>
           <tbody>
@@ -857,13 +859,11 @@ function buildFormHTML(s, sel) {
               <td class="sign-name">성명</td>
               <td class="sign-name">${s.name}</td>
               <td class="sign-name"></td>
-              <td class="sign-name"></td>
             </tr>
             <tr>
               <td class="sign-name">서명</td>
               <td>(서명)</td>
               <td>(서명)</td>
-              <td>(확인)</td>
             </tr>
           </tbody>
         </table>
