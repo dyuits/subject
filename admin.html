@@ -238,7 +238,15 @@ tr:hover td { background: #fdf2f8; }
 .page-section.active { display: block; }
 
 /* 페이지네이션 */
-.pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 18px; }
+.pagination-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px 18px; }
+.page-size-bar { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #64748b; }
+.page-size-btn {
+  padding: 5px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;
+  background: white; font-size: 12px; font-weight: 600; cursor: pointer; color: #475569; transition: all 0.2s;
+}
+.page-size-btn.active { background: linear-gradient(135deg,#e91e8c,#ff6b9d); border-color: transparent; color: white; }
+.page-size-btn:hover:not(.active) { background: #fce4ec; border-color: var(--pink); color: var(--pink); }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 6px; }
 .page-btn {
   width: 36px; height: 36px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
@@ -398,7 +406,7 @@ tr:hover td { background: #fdf2f8; }
             <tbody id="listBody"></tbody>
           </table>
         </div>
-        <div id="listPagination" class="pagination"></div>
+        <div id="listPagination" class="pagination-wrap"></div>
       </div>
     </div>
 
@@ -434,7 +442,7 @@ const db  = getDatabase(app);
 
 let allSelections = {};
 let chartGrade = null, chartDept = null;
-const PAGE_SIZE = 20;
+let PAGE_SIZE = 20;
 let currentPage = 1;
 let filteredStudents = [];
 let loginAttempts = 0;
@@ -653,15 +661,30 @@ function renderList() {
   // 페이지네이션
   const totalPages = Math.ceil(total/PAGE_SIZE);
   let pHTML = '';
-  if (currentPage > 1) pHTML += `<div class="page-btn" onclick="goPage(${currentPage-1})"><i class="fas fa-chevron-left"></i></div>`;
+
+  // 보기 단위 선택 버튼
+  pHTML += `<div class="page-size-bar">
+    <span>페이지당 표시:</span>
+    ${[20,50,100,500].map(n =>
+      `<button class="page-size-btn ${PAGE_SIZE===n?'active':''}" onclick="setPageSize(${n})">${n}명</button>`
+    ).join('')}
+    <span style="margin-left:6px;color:#94a3b8">(전체 ${total}명)</span>
+  </div>`;
+
+  // 페이지 버튼
+  let btnHTML = '';
+  if (currentPage > 1) btnHTML += `<div class="page-btn" onclick="goPage(${currentPage-1})"><i class="fas fa-chevron-left"></i></div>`;
   for (let i = Math.max(1,currentPage-2); i <= Math.min(totalPages,currentPage+2); i++) {
-    pHTML += `<div class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</div>`;
+    btnHTML += `<div class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</div>`;
   }
-  if (currentPage < totalPages) pHTML += `<div class="page-btn" onclick="goPage(${currentPage+1})"><i class="fas fa-chevron-right"></i></div>`;
+  if (currentPage < totalPages) btnHTML += `<div class="page-btn" onclick="goPage(${currentPage+1})"><i class="fas fa-chevron-right"></i></div>`;
+  if (btnHTML) pHTML += `<div class="pagination">${btnHTML}</div>`;
+
   document.getElementById('listPagination').innerHTML = pHTML;
 }
 
 window.goPage = function(p) { currentPage = p; renderList(); window.scrollTo(0,200); };
+window.setPageSize = function(n) { PAGE_SIZE = n; currentPage = 1; renderList(); };
 
 // ===== 반별 현황 =====
 function renderClassGrid() {
