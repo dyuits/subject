@@ -297,7 +297,25 @@ tr:hover td { background: #fdf2f8; }
 .print-page-title h1 { font-size: 20px; font-weight: 700; color: #1a1a2e; }
 .print-page-title p  { font-size: 13px; color: #666; margin-top: 5px; }
 .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.print-stamp { text-align: right; margin-top: 16px; font-size: 11px; color: #aaa; }
+.print-stamp { text-align: right; margin-top: 10px; font-size: 11px; color: #aaa; }
+.print-sign { margin-top: 18px; border-top: 1.5px solid #333; padding-top: 14px; }
+.print-sign-notice {
+  font-size: 11.5px; color: #333; text-align: center;
+  margin-bottom: 14px; line-height: 1.6;
+}
+.sign-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+.sign-table th {
+  background: #f0f0f0; font-size: 11.5px; font-weight: 700; color: #333;
+  border: 1px solid #ccc; padding: 6px 0; text-align: center; width: 25%;
+}
+.sign-table td {
+  border: 1px solid #ccc; height: 54px; text-align: center;
+  vertical-align: bottom; font-size: 10px; color: #999; padding-bottom: 4px;
+}
+.sign-table td.sign-name {
+  background: #fafafa; font-size: 11px; color: #555; font-weight: 600;
+  vertical-align: middle; height: 28px;
+}
 #printArea { display: none; }
 
 /* 초기화 모달 */
@@ -821,6 +839,35 @@ function buildFormHTML(s, sel) {
       <div class="print-row"><div class="print-label">학과</div><div class="print-value">${s.department}</div></div>
       ${subjects}
       <div class="print-stamp">신청일시: ${timeStr}</div>
+      <div class="print-sign">
+        <div class="print-sign-notice">
+          위 내용을 확인하였으며, 2027학년도 고교학점제 선택과목 신청에 동의합니다.
+        </div>
+        <table class="sign-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>학생</th>
+              <th>학부모</th>
+              <th>담임교사</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sign-name">성명</td>
+              <td class="sign-name">${s.name}</td>
+              <td class="sign-name"></td>
+              <td class="sign-name"></td>
+            </tr>
+            <tr>
+              <td class="sign-name">서명</td>
+              <td>(서명)</td>
+              <td>(서명)</td>
+              <td>(확인)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>`;
 }
 
