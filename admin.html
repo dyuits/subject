@@ -801,10 +801,9 @@ function buildFormHTML(s, sel) {
   let subjects = '';
   if (s.grade === 1) {
     subjects = `
-      <div class="print-row"><div class="print-label">1학기 고정</div><div class="print-value">문학 / 대수 / 영어 I</div></div>
-      <div class="print-row"><div class="print-label">국어 (2학기)</div><div class="print-value">${sel.subject_korean}</div></div>
-      <div class="print-row"><div class="print-label">수학 (2학기)</div><div class="print-value">${sel.subject_math}</div></div>
-      <div class="print-row"><div class="print-label">영어 (2학기)</div><div class="print-value">${sel.subject_english}</div></div>
+      <div class="print-row"><div class="print-label">국어</div><div class="print-value">1학기 : 문학 &nbsp;&nbsp; 2학기 : ${sel.subject_korean}</div></div>
+      <div class="print-row"><div class="print-label">수학</div><div class="print-value">1학기 : 대수 &nbsp;&nbsp; 2학기 : ${sel.subject_math}</div></div>
+      <div class="print-row"><div class="print-label">영어</div><div class="print-value">1학기 : 영어 I &nbsp;&nbsp; 2학기 : ${sel.subject_english}</div></div>
       <div class="print-row"><div class="print-label">제2외국어</div><div class="print-value">${sel.subject_second_lang}</div></div>`;
   } else {
     subjects = `
