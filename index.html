@@ -578,8 +578,8 @@ const db = getDatabase(app);
 const OPEN_DATE  = new Date('2026-05-18T00:00:00+09:00');
 const CLOSE_DATE = new Date('2026-05-20T23:55:00+09:00');
 function isOpen() {
-  const now = new Date();
-  return now >= OPEN_DATE && now <= CLOSE_DATE;
+  return true; // 테스트 기간: 항상 열림. 실제 운영 시 아래 줄로 교체
+  // const now = new Date(); return now >= OPEN_DATE && now <= CLOSE_DATE;
 }
 
 // ===== 전역 상태 =====

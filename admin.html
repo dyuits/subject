@@ -271,6 +271,27 @@ tr:hover td { background: #fdf2f8; }
 .recent-meta  { font-size: 11px; color: #94a3b8; margin-top: 2px; }
 .recent-time  { font-size: 11px; color: #bbb; margin-left: auto; }
 
+/* 출력 스타일 */
+@media print {
+  body * { visibility: hidden !important; }
+  #printArea, #printArea * { visibility: visible !important; }
+  #printArea { position: fixed; inset: 0; background: white; z-index: 9999; padding: 12mm 15mm; }
+}
+.print-form { border: 1px solid #ddd; border-radius: 6px; padding: 16px; margin-bottom: 16px; page-break-inside: avoid; }
+.print-form-header { text-align: center; padding-bottom: 12px; border-bottom: 2px solid #e91e8c; margin-bottom: 14px; }
+.print-form-header h2 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 3px; }
+.print-form-header p  { font-size: 11px; color: #888; }
+.print-row { display: flex; border-bottom: 1px solid #f0f0f0; }
+.print-row:last-child { border-bottom: none; }
+.print-label { width: 110px; background: #f8f9fa; padding: 7px 10px; font-size: 12px; font-weight: 700; color: #555; flex-shrink: 0; }
+.print-value { padding: 7px 12px; font-size: 12px; color: #222; flex: 1; }
+.print-page-title { text-align: center; margin-bottom: 24px; }
+.print-page-title h1 { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+.print-page-title p  { font-size: 13px; color: #666; margin-top: 5px; }
+.print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.print-stamp { text-align: right; margin-top: 16px; font-size: 11px; color: #aaa; }
+#printArea { display: none; }
+
 /* 초기화 모달 */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
 .modal { background: white; border-radius: 20px; padding: 32px 28px; max-width: 380px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
@@ -353,6 +374,7 @@ tr:hover td { background: #fdf2f8; }
       <div class="page-header">
         <div><div class="page-title">신청 현황</div><div class="page-subtitle">전체 학생 선택과목 신청 목록</div></div>
         <button class="btn-sm btn-green" onclick="exportCSV()"><i class="fas fa-download"></i> CSV 내보내기</button>
+        <button class="btn-sm btn-pink" onclick="printAll()"><i class="fas fa-print"></i> 전체 신청서 출력</button>
       </div>
       <div class="filter-bar">
         <select id="fGrade" onchange="applyFilter()"><option value="">전체 학년</option><option value="1">1학년</option><option value="2">2학년</option></select>
@@ -371,7 +393,7 @@ tr:hover td { background: #fdf2f8; }
           <table>
             <thead><tr>
               <th>학번</th><th>이름</th><th>학과</th><th>상태</th>
-              <th>신청 과목</th><th>신청 일시</th>
+              <th>신청 과목</th><th>신청 일시</th><th>출력</th>
             </tr></thead>
             <tbody id="listBody"></tbody>
           </table>
@@ -397,6 +419,9 @@ tr:hover td { background: #fdf2f8; }
     </div>
   </main>
 </div>
+
+<!-- 출력 영역 -->
+<div id="printArea"></div>
 
 <script src="js/firebase-config.js"></script>
 <script src="js/students-data.js"></script>
@@ -620,6 +645,7 @@ function renderList() {
       <td>${badge}</td>
       <td style="font-size:12px;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${subjects}</td>
       <td style="font-size:12px;color:#94a3b8">${time}</td>
+      <td>${sel ? `<button class="btn-sm btn-gray" style="padding:5px 10px;font-size:11px" onclick="printOne('${s.id}')"><i class="fas fa-print"></i></button>` : '-'}</td>
     </tr>`;
   }).join('');
 
@@ -732,6 +758,71 @@ window.showPage = function(name) {
 };
 
 function pad(n) { return String(n).padStart(2,'0'); }
+
+// ===== 출력 함수 =====
+function buildFormHTML(s, sel) {
+  const dt = new Date(sel.submitted_at);
+  const timeStr = `${dt.getFullYear()}.${pad(dt.getMonth()+1)}.${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+  let subjects = '';
+  if (s.grade === 1) {
+    subjects = `
+      <div class="print-row"><div class="print-label">1학기 고정</div><div class="print-value">문학 / 대수 / 영어 I</div></div>
+      <div class="print-row"><div class="print-label">국어 (2학기)</div><div class="print-value">${sel.subject_korean}</div></div>
+      <div class="print-row"><div class="print-label">수학 (2학기)</div><div class="print-value">${sel.subject_math}</div></div>
+      <div class="print-row"><div class="print-label">영어 (2학기)</div><div class="print-value">${sel.subject_english}</div></div>
+      <div class="print-row"><div class="print-label">제2외국어</div><div class="print-value">${sel.subject_second_lang}</div></div>`;
+  } else {
+    subjects = `
+      <div class="print-row"><div class="print-label">사회/과학</div><div class="print-value">${sel.subject_social_science.replace(/-/g,' → ')}</div></div>
+      <div class="print-row"><div class="print-label">전문교과</div><div class="print-value">${sel.subject_major}</div></div>`;
+  }
+  return `
+    <div class="print-form">
+      <div class="print-form-header">
+        <h2>🌸 2027학년도 고교학점제 선택과목 신청서</h2>
+        <p>제주중앙고등학교 · 1차 수강신청</p>
+      </div>
+      <div class="print-row"><div class="print-label">학번</div><div class="print-value">${s.grade}학년 ${s.class_num}반 ${s.student_num}번</div></div>
+      <div class="print-row"><div class="print-label">이름</div><div class="print-value">${s.name}</div></div>
+      <div class="print-row"><div class="print-label">학과</div><div class="print-value">${s.department}</div></div>
+      ${subjects}
+      <div class="print-stamp">신청일시: ${timeStr}</div>
+    </div>`;
+}
+
+window.printOne = function(studentId) {
+  const s   = STUDENTS_DATA[studentId];
+  const sel = allSelections[studentId];
+  if (!s || !sel) { alert('신청 내역이 없습니다.'); return; }
+  const area = document.getElementById('printArea');
+  area.innerHTML = `
+    <div class="print-page-title">
+      <h1>제주중앙고등학교</h1>
+      <p>2027학년도 고교학점제 선택과목 신청서</p>
+    </div>
+    ${buildFormHTML(s, sel)}`;
+  area.style.display = 'block';
+  window.print();
+  area.style.display = 'none';
+};
+
+window.printAll = function() {
+  const targets = filteredStudents.filter(s => allSelections[s.id]);
+  if (!targets.length) { alert('출력할 신청 내역이 없습니다.'); return; }
+  if (!confirm(`신청 완료된 ${targets.length}명의 신청서를 출력합니다.`)) return;
+  const area = document.getElementById('printArea');
+  area.innerHTML = `
+    <div class="print-page-title">
+      <h1>제주중앙고등학교</h1>
+      <p>2027학년도 고교학점제 선택과목 신청서 (총 ${targets.length}명) · 출력일: ${new Date().toLocaleDateString('ko-KR')}</p>
+    </div>
+    <div class="print-grid">
+      ${targets.map(s => buildFormHTML(s, allSelections[s.id])).join('')}
+    </div>`;
+  area.style.display = 'block';
+  window.print();
+  area.style.display = 'none';
+};
 </script>
 </body>
 </html>
