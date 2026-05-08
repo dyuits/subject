@@ -2,13 +2,14 @@
 // Firebase Console → 프로젝트 설정 → 웹 앱 추가에서 확인
 
 const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDeEdrOgEiCaPhS8uCCxtQPcHhEw9tDjfk",
+  authDomain: "e--rrev.firebaseapp.com",
+  databaseURL: "https://e--rrev-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "e--rrev",
+  storageBucket: "e--rrev.firebasestorage.app",
+  messagingSenderId: "777834843247",
+  appId: "1:777834843247:web:6c9b21ade2a708d1c4519a",
+  measurementId: "G-78JWLWXQ3M"
 };
 
 // 관리자 비밀번호 SHA-256 해시 (기본: jchs6425)
