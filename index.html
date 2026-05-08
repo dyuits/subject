@@ -349,6 +349,48 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* 신청 확인 카드 */
+.lookup-card {
+  background: white; border-radius: 20px; padding: 28px 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07); margin-top: 18px;
+  border-top: 4px solid #7c3aed;
+}
+.lookup-card .card-title { color: #7c3aed; }
+.lookup-selects { display: flex; gap: 8px; flex-wrap: wrap; }
+.lookup-selects select { flex: 1; min-width: 80px; }
+.btn-purple {
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: white; font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: inherit; display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-top: 14px; transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+}
+.btn-purple:hover { transform: translateY(-2px); }
+.lookup-result {
+  margin-top: 20px; padding: 20px; background: #f5f3ff;
+  border-radius: 14px; border: 1.5px solid #ddd6fe;
+  animation: slideUp 0.3s ease;
+}
+.lookup-result-name {
+  font-size: 15px; font-weight: 700; color: #5b21b6; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 7px;
+}
+.lookup-row {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid #ede9fe; font-size: 13.5px;
+}
+.lookup-row:last-child { border-bottom: none; }
+.lookup-label { font-weight: 700; color: #6d28d9; min-width: 80px; }
+.lookup-value { color: #1a1a2e; flex: 1; }
+.lookup-badge {
+  display: inline-block; background: #7c3aed; color: white;
+  font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; margin-right: 4px;
+}
+.lookup-time { font-size: 11.5px; color: #9ca3af; text-align: right; margin-top: 12px; }
+.lookup-empty { text-align: center; padding: 20px; color: #9ca3af; font-size: 14px; }
+.lookup-empty i { font-size: 32px; color: #ddd6fe; display: block; margin-bottom: 10px; }
+
 /* 신청 마감 배너 */
 .closed-banner {
   background: linear-gradient(135deg, #fff3cd, #ffe082);
@@ -557,6 +599,32 @@ body {
     <button class="btn-secondary" style="margin-top:0" onclick="window.location.reload()">
       <i class="fas fa-home"></i> 처음으로
     </button>
+  </section>
+
+  <!-- 신청 내역 조회 -->
+  <section class="lookup-card">
+    <div class="card-title"><i class="fas fa-search"></i> 내 신청 내역 확인</div>
+    <div class="lookup-selects">
+      <select class="form-select" id="lkGrade" onchange="lkGradeChange()">
+        <option value="">학년</option>
+        <option value="1">1학년</option>
+        <option value="2">2학년</option>
+      </select>
+      <select class="form-select" id="lkClass" onchange="lkClassChange()">
+        <option value="">반</option>
+      </select>
+      <select class="form-select" id="lkNum">
+        <option value="">번호</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-top:12px;margin-bottom:0">
+      <input class="form-input" type="text" id="lkBirth" maxlength="8" inputmode="numeric"
+        placeholder="생년월일 8자리 (예: 20100213)" oninput="this.value=this.value.replace(/\D/g,'')">
+    </div>
+    <button class="btn-purple" onclick="lookupMyRecord()">
+      <i class="fas fa-search"></i> 신청 내역 조회
+    </button>
+    <div id="lkResult"></div>
   </section>
 </div>
 
@@ -929,6 +997,88 @@ function showError(id, msg) {
   const el = document.getElementById(id);
   el.textContent = msg; el.style.display = 'block';
 }
+
+// ===== 신청 내역 조회 =====
+window.lkGradeChange = function() {
+  const g = document.getElementById('lkGrade').value;
+  const selClass = document.getElementById('lkClass');
+  const selNum   = document.getElementById('lkNum');
+  selClass.innerHTML = '<option value="">반</option>';
+  selNum.innerHTML   = '<option value="">번호</option>';
+  if (!g) return;
+  [7,8,9,10].forEach(c => {
+    const o = document.createElement('option'); o.value = c; o.textContent = c+'반';
+    selClass.appendChild(o);
+  });
+};
+
+window.lkClassChange = function() {
+  const g = document.getElementById('lkGrade').value;
+  const c = document.getElementById('lkClass').value;
+  const selNum = document.getElementById('lkNum');
+  selNum.innerHTML = '<option value="">번호</option>';
+  if (!c) return;
+  let max = 25;
+  if (g === '2' && ['8','9','10'].includes(c)) max = 24;
+  for (let i = 1; i <= max; i++) {
+    const o = document.createElement('option'); o.value = i; o.textContent = i+'번';
+    selNum.appendChild(o);
+  }
+};
+
+window.lookupMyRecord = async function() {
+  const g = document.getElementById('lkGrade').value;
+  const c = document.getElementById('lkClass').value;
+  const n = document.getElementById('lkNum').value;
+  const b = document.getElementById('lkBirth').value.trim();
+  const out = document.getElementById('lkResult');
+
+  if (!g || !c || !n) { out.innerHTML = '<div class="lookup-empty"><i class="fas fa-exclamation-circle"></i>학년, 반, 번호를 선택해 주세요.</div>'; return; }
+  if (!b || b.length !== 8 || !/^\d{8}$/.test(b)) { out.innerHTML = '<div class="lookup-empty"><i class="fas fa-exclamation-circle"></i>생년월일 8자리를 입력해 주세요.</div>'; return; }
+
+  const sid = `${g}-${c}-${n}`;
+  const student = STUDENTS_DATA[sid];
+  if (!student) { out.innerHTML = '<div class="lookup-empty"><i class="fas fa-user-times"></i>학생 정보를 찾을 수 없습니다.</div>'; return; }
+
+  const dbBirth = student.birth.replace(/\./g,'').replace(/[^0-9]/g,'').substring(0,8);
+  if (dbBirth !== b) { out.innerHTML = '<div class="lookup-empty"><i class="fas fa-lock"></i>생년월일이 일치하지 않습니다.</div>'; return; }
+
+  out.innerHTML = '<div class="lookup-empty"><i class="fas fa-spinner fa-spin"></i>조회 중...</div>';
+
+  try {
+    const snap = await get(ref(db, `selections/${sid}`));
+    if (!snap.exists()) {
+      out.innerHTML = '<div class="lookup-empty"><i class="fas fa-inbox"></i>아직 신청 내역이 없습니다.</div>';
+      return;
+    }
+    const sel = snap.val();
+    const dt = new Date(sel.submitted_at);
+    const pad = n => String(n).padStart(2,'0');
+    const timeStr = `${dt.getFullYear()}.${pad(dt.getMonth()+1)}.${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+
+    let rows = '';
+    if (student.grade === 1) {
+      rows = `
+        <div class="lookup-row"><span class="lookup-label">국어</span><span class="lookup-value"><span class="lookup-badge">1학기</span>문학&nbsp;&nbsp;<span class="lookup-badge">2학기</span>${sel.subject_korean}</span></div>
+        <div class="lookup-row"><span class="lookup-label">수학</span><span class="lookup-value"><span class="lookup-badge">1학기</span>대수&nbsp;&nbsp;<span class="lookup-badge">2학기</span>${sel.subject_math}</span></div>
+        <div class="lookup-row"><span class="lookup-label">영어</span><span class="lookup-value"><span class="lookup-badge">1학기</span>영어 I&nbsp;&nbsp;<span class="lookup-badge">2학기</span>${sel.subject_english}</span></div>
+        <div class="lookup-row"><span class="lookup-label">제2외국어</span><span class="lookup-value">${sel.subject_second_lang}</span></div>`;
+    } else {
+      rows = `
+        <div class="lookup-row"><span class="lookup-label">사회/과학</span><span class="lookup-value">${sel.subject_social_science.replace(/-/g,' - ')}</span></div>
+        <div class="lookup-row"><span class="lookup-label">전문교과</span><span class="lookup-value">${sel.subject_major}</span></div>`;
+    }
+
+    out.innerHTML = `
+      <div class="lookup-result">
+        <div class="lookup-result-name"><i class="fas fa-user-check"></i>${student.grade}학년 ${student.class_num}반 ${student.student_num}번 ${student.name} (${student.department})</div>
+        ${rows}
+        <div class="lookup-time">신청일시: ${timeStr}</div>
+      </div>`;
+  } catch(e) {
+    out.innerHTML = '<div class="lookup-empty"><i class="fas fa-exclamation-triangle"></i>조회 중 오류가 발생했습니다.</div>';
+  }
+};
 </script>
 </body>
 </html>
