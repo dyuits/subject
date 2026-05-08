@@ -314,6 +314,56 @@ tr:hover td { background: #fdf2f8; }
 }
 #printArea { display: none; }
 
+/* 학생 상세 모달 */
+.detail-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2000; padding: 20px; animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.detail-modal {
+  background: white; border-radius: 22px; width: 100%; max-width: 420px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.2); animation: slideUp .25s ease; overflow: hidden;
+}
+@keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+.detail-modal-head {
+  background: linear-gradient(135deg,#e91e8c,#ff6b9d);
+  padding: 20px 22px 18px; display: flex; align-items: center; gap: 14px;
+}
+.detail-modal-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255,255,255,0.3); color: white;
+  font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.detail-modal-head-info { flex: 1; }
+.detail-modal-name { font-size: 18px; font-weight: 700; color: white; }
+.detail-modal-sub  { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 3px; }
+.detail-modal-close {
+  background: rgba(255,255,255,0.2); border: none; color: white;
+  width: 30px; height: 30px; border-radius: 50%; font-size: 15px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.detail-modal-body { padding: 18px 22px 22px; }
+.detail-row {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 13.5px;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-label { font-weight: 700; color: #475569; min-width: 80px; font-size: 12.5px; }
+.detail-value { color: #1a1a2e; flex: 1; line-height: 1.5; }
+.detail-badge {
+  display: inline-block; font-size: 10.5px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px; margin-right: 4px;
+  background: #fce4ec; color: #c2185b;
+}
+.detail-time { text-align: right; font-size: 11px; color: #94a3b8; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e2e8f0; }
+.detail-modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+.detail-modal-actions button { flex: 1; padding: 11px; border-radius: 12px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; border: none; transition: all .2s; }
+
+/* recent-item 클릭 커서 */
+.recent-item { cursor: pointer; transition: background .15s; }
+.recent-item:hover { background: #fdf2f8; border-radius: 12px; }
+
 /* 초기화 모달 */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
 .modal { background: white; border-radius: 20px; padding: 32px 28px; max-width: 380px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
@@ -442,6 +492,28 @@ tr:hover td { background: #fdf2f8; }
   </main>
 </div>
 
+<!-- 학생 상세 모달 -->
+<div id="detailModalOverlay" class="detail-modal-overlay" style="display:none" onclick="if(event.target===this)closeDetailModal()">
+  <div class="detail-modal">
+    <div class="detail-modal-head">
+      <div class="detail-modal-avatar" id="dmAvatar"></div>
+      <div class="detail-modal-head-info">
+        <div class="detail-modal-name" id="dmName"></div>
+        <div class="detail-modal-sub"  id="dmSub"></div>
+      </div>
+      <button class="detail-modal-close" onclick="closeDetailModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="detail-modal-body">
+      <div id="dmRows"></div>
+      <div class="detail-time" id="dmTime"></div>
+      <div class="detail-modal-actions">
+        <button style="background:#fce4ec;color:#e91e8c" id="dmPrintBtn"><i class="fas fa-print"></i> 출력</button>
+        <button style="background:#fee2e2;color:#dc2626" id="dmResetBtn"><i class="fas fa-trash-alt"></i> 초기화</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 출력 영역 -->
 <div id="printArea"></div>
 
@@ -549,11 +621,11 @@ function updateDashboard() {
   listEl.innerHTML = recent.map(s => {
     const dt   = new Date(s.submitted_at);
     const time = `${pad(dt.getMonth()+1)}/${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
-    return `<div class="recent-item">
+    return `<div class="recent-item" onclick="openDetailModal('${s.student_id}')">
       <div class="recent-avatar">${s.name[0]}</div>
       <div><div class="recent-name">${s.name}</div>
       <div class="recent-meta">${s.grade}학년 ${s.class_num}반 ${s.student_num}번 · ${s.department}</div></div>
-      <div class="recent-time">${time}</div>
+      <div class="recent-time">${time} <i class="fas fa-chevron-right" style="font-size:10px;color:#cbd5e1;margin-left:4px"></i></div>
     </div>`;
   }).join('');
 
@@ -785,6 +857,45 @@ window.exportCSV = function() {
   const a    = document.createElement('a'); a.href = url;
   a.download = `선택과목신청현황_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','')}csv`;
   a.click(); URL.revokeObjectURL(url);
+};
+
+// ===== 학생 상세 모달 =====
+window.openDetailModal = function(studentId) {
+  const s   = STUDENTS_DATA[studentId];
+  const sel = allSelections[studentId];
+  if (!s || !sel) return;
+
+  document.getElementById('dmAvatar').textContent = s.name[0];
+  document.getElementById('dmName').textContent   = s.name;
+  document.getElementById('dmSub').textContent    = `${s.grade}학년 ${s.class_num}반 ${s.student_num}번 · ${s.department}`;
+
+  let rows = '';
+  if (s.grade === 1) {
+    rows = `
+      <div class="detail-row"><span class="detail-label">국어</span><span class="detail-value"><span class="detail-badge">1학기</span>문학&nbsp; <span class="detail-badge">2학기</span>${sel.subject_korean}</span></div>
+      <div class="detail-row"><span class="detail-label">수학</span><span class="detail-value"><span class="detail-badge">1학기</span>대수&nbsp; <span class="detail-badge">2학기</span>${sel.subject_math}</span></div>
+      <div class="detail-row"><span class="detail-label">영어</span><span class="detail-value"><span class="detail-badge">1학기</span>영어 I&nbsp; <span class="detail-badge">2학기</span>${sel.subject_english}</span></div>
+      <div class="detail-row"><span class="detail-label">제2외국어</span><span class="detail-value">${sel.subject_second_lang}</span></div>`;
+  } else {
+    rows = `
+      <div class="detail-row"><span class="detail-label">사회/과학</span><span class="detail-value">${sel.subject_social_science.replace(/-/g,' - ')}</span></div>
+      <div class="detail-row"><span class="detail-label">전문교과</span><span class="detail-value">${sel.subject_major}</span></div>`;
+  }
+  document.getElementById('dmRows').innerHTML = rows;
+
+  const dt = new Date(sel.submitted_at);
+  document.getElementById('dmTime').textContent = `신청일시: ${dt.getFullYear()}.${pad(dt.getMonth()+1)}.${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+
+  document.getElementById('dmPrintBtn').onclick = () => { closeDetailModal(); printOne(studentId); };
+  document.getElementById('dmResetBtn').onclick = () => { closeDetailModal(); resetStudent(studentId, s.name); };
+
+  document.getElementById('detailModalOverlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeDetailModal = function() {
+  document.getElementById('detailModalOverlay').style.display = 'none';
+  document.body.style.overflow = '';
 };
 
 // ===== 탭 전환 =====
