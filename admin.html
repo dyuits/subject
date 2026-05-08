@@ -281,9 +281,17 @@ tr:hover td { background: #fdf2f8; }
 
 /* 출력 스타일 */
 @media print {
-  body * { visibility: hidden !important; }
-  #printArea, #printArea * { visibility: visible !important; }
-  #printArea { position: fixed; inset: 0; background: white; z-index: 9999; padding: 14mm 18mm; }
+  /* 페이지 여백 제거 */
+  html, body { margin: 0 !important; padding: 0 !important; background: white !important; }
+  /* printArea 제외 모든 요소 숨김 (visibility 아닌 display 사용 → 페이지 공간 제거) */
+  body > *:not(#printArea) { display: none !important; }
+  /* printArea만 출력 */
+  #printArea {
+    display: block !important;
+    position: static !important;
+    padding: 14mm 18mm;
+    background: white;
+  }
   .print-form { page-break-after: always; page-break-inside: avoid; margin-bottom: 0 !important; }
   .print-form:last-child { page-break-after: auto; }
 }
