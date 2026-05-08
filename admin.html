@@ -393,7 +393,7 @@ tr:hover td { background: #fdf2f8; }
           <table>
             <thead><tr>
               <th>학번</th><th>이름</th><th>학과</th><th>상태</th>
-              <th>신청 과목</th><th>신청 일시</th><th>출력</th>
+              <th>신청 과목</th><th>신청 일시</th><th>출력</th><th>초기화</th>
             </tr></thead>
             <tbody id="listBody"></tbody>
           </table>
@@ -646,6 +646,7 @@ function renderList() {
       <td style="font-size:12px;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${subjects}</td>
       <td style="font-size:12px;color:#94a3b8">${time}</td>
       <td>${sel ? `<button class="btn-sm btn-gray" style="padding:5px 10px;font-size:11px" onclick="printOne('${s.id}')"><i class="fas fa-print"></i></button>` : '-'}</td>
+      <td>${sel ? `<button class="btn-sm" style="padding:5px 10px;font-size:11px;background:#fee2e2;color:#dc2626;border:none;cursor:pointer;border-radius:8px" onclick="resetStudent('${s.id}','${s.name}')"><i class="fas fa-trash-alt"></i></button>` : '-'}</td>
     </tr>`;
   }).join('');
 
@@ -758,6 +759,17 @@ window.showPage = function(name) {
 };
 
 function pad(n) { return String(n).padStart(2,'0'); }
+
+// ===== 초기화 함수 =====
+window.resetStudent = async function(studentId, name) {
+  if (!confirm(`⚠️ ${name} 학생의 신청 내역을 초기화합니다.\n삭제 후 복구할 수 없습니다. 계속하시겠습니까?`)) return;
+  try {
+    await remove(ref(db, `selections/${studentId}`));
+    alert(`✅ ${name} 학생의 신청 내역이 초기화되었습니다.`);
+  } catch(e) {
+    alert('오류가 발생했습니다. 다시 시도해주세요.');
+  }
+};
 
 // ===== 출력 함수 =====
 function buildFormHTML(s, sel) {
