@@ -335,7 +335,7 @@ function renderResult(student, selection) {
   if (!selection) {
     content = `<div class="card"><div class="not-submitted">
       <i class="fas fa-exclamation-circle"></i>
-      <p>아직 선택과목 신청을 하지 않았습니다.<br>신청 기간(5/18~5/20)에 신청해 주세요.</p>
+      <p>아직 선택과목 신청을 하지 않았습니다.<br>신청해 주세요.</p>
     </div></div>`;
   } else {
     const dt = new Date(selection.submitted_at);
