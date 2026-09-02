@@ -240,10 +240,13 @@ body {
 <script src="js/students-data.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, get, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db  = getDatabase(app);
+const studentsReady = get(ref(db, 'students')).then(snap => {
+  if (snap.exists()) STUDENTS_DATA = snap.val();
+}).catch(() => {});
 
 let currentListener = null;
 let currentStudentData = null;
@@ -262,21 +265,23 @@ document.getElementById('selGrade').addEventListener('change', function() {
   });
 });
 
-document.getElementById('selClass').addEventListener('change', function() {
+document.getElementById('selClass').addEventListener('change', async function() {
+  await studentsReady;
   const grade = document.getElementById('selGrade').value;
   const cls   = this.value;
   const selNum = document.getElementById('selNum');
   selNum.innerHTML = '<option value="">번호 선택</option>';
   if (!cls) return;
-  let maxNum = 25;
-  if (grade === '2' && ['8','9','10'].includes(cls)) maxNum = 24;
+  const classNumbers = Object.values(STUDENTS_DATA).filter(s => String(s.grade) === grade && String(s.class_num) === cls).map(s => s.student_num);
+  const maxNum = Math.max(25, ...classNumbers);
   for (let i = 1; i <= maxNum; i++) {
     const opt = document.createElement('option');
     opt.value = i; opt.textContent = i + '번'; selNum.appendChild(opt);
   }
 });
 
-window.queryStudent = function() {
+window.queryStudent = async function() {
+  await studentsReady;
   const grade = document.getElementById('selGrade').value;
   const cls   = document.getElementById('selClass').value;
   const num   = document.getElementById('selNum').value;

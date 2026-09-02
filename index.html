@@ -681,6 +681,9 @@ import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getDatabase(app);
+const studentsReady = get(ref(db, 'students')).then(snap => {
+  if (snap.exists()) STUDENTS_DATA = snap.val();
+}).catch(() => {});
 
 // ===== 신청 기간 체크 (상시 접수: 기간 제한 없음) =====
 function isOpen() {
@@ -708,14 +711,15 @@ document.getElementById('selGrade').addEventListener('change', function() {
   });
 });
 
-document.getElementById('selClass').addEventListener('change', function() {
+document.getElementById('selClass').addEventListener('change', async function() {
+  await studentsReady;
   const grade = document.getElementById('selGrade').value;
   const cls   = this.value;
   const selNum = document.getElementById('selNum');
   selNum.innerHTML = '<option value="">번호 선택</option>';
   if (!cls) return;
-  let maxNum = 25;
-  if (grade === '2' && ['8','9','10'].includes(cls)) maxNum = 24;
+  const classNumbers = Object.values(STUDENTS_DATA).filter(s => String(s.grade) === grade && String(s.class_num) === cls).map(s => s.student_num);
+  const maxNum = Math.max(25, ...classNumbers);
   for (let i = 1; i <= maxNum; i++) {
     const opt = document.createElement('option');
     opt.value = i; opt.textContent = i + '번';
@@ -725,6 +729,7 @@ document.getElementById('selClass').addEventListener('change', function() {
 
 // ===== 본인 확인 =====
 window.verifyStudent = async function() {
+  await studentsReady;
   if (!isOpen()) {
     showError('step1Error','현재 신청을 받을 수 없습니다.');
     return;
@@ -1049,14 +1054,15 @@ window.lkGradeChange = function() {
   });
 };
 
-window.lkClassChange = function() {
+window.lkClassChange = async function() {
+  await studentsReady;
   const g = document.getElementById('lkGrade').value;
   const c = document.getElementById('lkClass').value;
   const selNum = document.getElementById('lkNum');
   selNum.innerHTML = '<option value="">번호</option>';
   if (!c) return;
-  let max = 25;
-  if (g === '2' && ['8','9','10'].includes(c)) max = 24;
+  const classNumbers = Object.values(STUDENTS_DATA).filter(s => String(s.grade) === g && String(s.class_num) === c).map(s => s.student_num);
+  const max = Math.max(25, ...classNumbers);
   for (let i = 1; i <= max; i++) {
     const o = document.createElement('option'); o.value = i; o.textContent = i+'번';
     selNum.appendChild(o);
@@ -1074,6 +1080,7 @@ window.lookupMyRecord = async function() {
   if (!b || b.length !== 8 || !/^\d{8}$/.test(b)) { out.innerHTML = '<div class="lookup-empty"><i class="fas fa-exclamation-circle"></i>생년월일 8자리를 입력해 주세요.</div>'; return; }
 
   const sid = `${g}-${c}-${n}`;
+  await studentsReady;
   const student = STUDENTS_DATA[sid];
   if (!student) { out.innerHTML = '<div class="lookup-empty"><i class="fas fa-user-times"></i>학생 정보를 찾을 수 없습니다.</div>'; return; }
 

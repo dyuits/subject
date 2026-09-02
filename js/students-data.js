@@ -1,5 +1,7 @@
 // 학생 데이터 - students.csv 기반
-const STUDENTS_DATA = {
+// Firebase의 students 명단을 불러오면 이 기본 명단을 교체합니다.
+// 네트워크 장애 시에는 배포 시점의 명단을 예비값으로 사용합니다.
+let STUDENTS_DATA = {
   "1-7-1": {
     "id": "1-7-1",
     "grade": 1,

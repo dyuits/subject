@@ -46,14 +46,14 @@ Firebase Console → Realtime Database → **규칙** 탭:
 ```json
 {
   "rules": {
-    "students":   { ".read": true,  ".write": false },
+    "students":   { ".read": true,  ".write": true  },
     "selections": { ".read": true,  ".write": true  },
     "config":     { ".read": true,  ".write": false }
   }
 }
 ```
 
-> ⚠️ 초기 업로드 시에만 `config`의 `.write`를 `true`로 임시 변경 후, 업로드 완료 후 다시 `false`로 변경하세요.
+> ⚠️ 관리자 화면의 학생 추가·수정 기능은 `students` 쓰기 권한이 필요합니다. 현재 구조는 별도 Firebase Authentication 없이 관리자 비밀번호를 브라우저에서 확인하므로, 학교 외부에 공개하는 경우 Firebase Authentication과 보안 규칙을 함께 강화하세요. 초기 업로드 시에만 `config`의 `.write`를 `true`로 임시 변경 후 다시 `false`로 변경합니다.
 
 ### 4단계 — 초기 데이터 업로드
 
