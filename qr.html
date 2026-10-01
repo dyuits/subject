@@ -100,16 +100,51 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f1f5f9; }
   <div class="empty"><i class="fas fa-qrcode"></i><p>위에서 필터를 설정하고 생성 버튼을 클릭하세요.</p></div>
 </div>
 
-<script src="js/students-data.js"></script>
+<script src="js/firebase-config.js"></script>
 <script>
 const BASE_URL = window.location.origin + window.location.pathname.replace('qr.html','index.html');
 
-function generate() {
+let generation = 0;
+let databasePromise;
+function loadDatabase() {
+  if (!databasePromise) {
+    databasePromise = Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js')
+    ]).then(([app, database]) => ({
+      ...database,
+      db: database.getDatabase(app.initializeApp(FIREBASE_CONFIG))
+    })).catch(error => { databasePromise = null; throw error; });
+  }
+  return databasePromise;
+}
+
+async function generate() {
+  const request = ++generation;
+  const grid = document.getElementById('qrGrid');
+  document.getElementById('countBadge').textContent = '불러오는 중';
+  grid.textContent = '최신 학생 명단을 불러오는 중입니다…';
+  let students;
+  try {
+    if (typeof QRCode !== 'function') throw new Error('QR 라이브러리 로드 실패');
+    const { db, ref, get } = await loadDatabase();
+    const snapshot = await Promise.race([
+      get(ref(db, 'students')),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('명단 로드 시간 초과')), 15000))
+    ]);
+    if (request !== generation) return;
+    students = snapshot.val() || {};
+  } catch (error) {
+    if (request !== generation) return;
+    document.getElementById('countBadge').textContent = '생성 실패';
+    grid.textContent = '학생 명단 또는 QR 기능을 불러오지 못했습니다. 인터넷 연결을 확인하고 생성 버튼을 다시 눌러 주세요.';
+    return;
+  }
   const grade = document.getElementById('fGrade').value;
   const cls   = document.getElementById('fClass').value;
   const dept  = document.getElementById('fDept').value;
 
-  const filtered = Object.values(STUDENTS_DATA).filter(s => {
+  const filtered = Object.values(students).filter(s => {
     if (grade && String(s.grade)     !== grade) return false;
     if (cls   && String(s.class_num) !== cls)   return false;
     if (dept  && s.department        !== dept)  return false;
@@ -117,7 +152,6 @@ function generate() {
   }).sort((a,b) => a.grade-b.grade || a.class_num-b.class_num || a.student_num-b.student_num);
 
   document.getElementById('countBadge').textContent = filtered.length + '개';
-  const grid = document.getElementById('qrGrid');
 
   if (!filtered.length) {
     grid.innerHTML = '<div class="empty"><i class="fas fa-search"></i><p>해당 조건의 학생이 없습니다.</p></div>';
@@ -128,15 +162,16 @@ function generate() {
     `<div class="qr-card">
       <div class="qr-box" id="qr-${s.id}"></div>
       <div class="student-id">${s.grade}학년 ${s.class_num}반 ${s.student_num}번</div>
-      <div class="student-name">${s.name}</div>
-      <div class="student-dept">${s.department}</div>
+      <div class="student-name">${escapeHtml(s.name)}</div>
+      <div class="student-dept">${escapeHtml(s.department)}</div>
     </div>`
   ).join('');
 
   // QR 생성 (qrcodejs)
   filtered.forEach((s, i) => {
     setTimeout(() => {
-      const url = `${BASE_URL}?sid=${s.id}`;
+      if (request !== generation) return;
+      const url = `${BASE_URL}?sid=${encodeURIComponent(s.id)}`;
       new QRCode(document.getElementById(`qr-${s.id}`), {
         text: url,
         width: 130, height: 130,
@@ -147,7 +182,14 @@ function generate() {
   });
 }
 
+function escapeHtml(value) {
+  const element = document.createElement('span');
+  element.textContent = String(value ?? '');
+  return element.innerHTML;
+}
+
 function resetFilter() {
+  ++generation;
   ['fGrade','fClass','fDept'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('qrGrid').innerHTML = '<div class="empty"><i class="fas fa-qrcode"></i><p>위에서 필터를 설정하고 생성 버튼을 클릭하세요.</p></div>';
   document.getElementById('countBadge').textContent = '0개';
